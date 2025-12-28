@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   body {
@@ -478,7 +479,7 @@
     top: 0;
     right: -400px; /* Hidden by default */
     width: 350px;
-    height: 133vh;
+    height: 100%;
     background: #ffffff;
     backdrop-filter: blur(20px);
     border-left: 1px solid rgba(255,255,255,0.1);
@@ -525,7 +526,7 @@
     border: 1px solid rgba(255,255,255,0.05);
   }
   .Comment-User { font-weight: bold; color: #ff8a00; font-size: 12px; margin-bottom: 5px; display: block; }
-  .Comment-Text { color: #ddd; margin: 0; }
+  .Comment-Text { color: black; margin: 0; }
   
   .Reply-Btn {
     background: none; border: none; color: rgba(255,255,255,0.5);
@@ -544,7 +545,7 @@
     border: 1px solid rgba(255,255,255,0.1);
     padding: 10px;
     border-radius: 5px;
-    color: white;
+    color: black;
   }
   .Input-Field:focus { outline: none; border-color: #e52e71; }
   .Send-Btn {
@@ -837,7 +838,7 @@
       
       // We inject the name and id into the template string below
         const htmlString = `
-      <td class="Table__TD" data-cell-id="${team.conf}-${team.conf_pos-1}">
+      <td class="Table__TD" data-cell-id="${team.conf}-${team.conf_pos-1}" data-cell-name="${team.name}">
         <div class="team-link flex items-centerclr-gray-03 mascot-row mascot-row">
           <span class="pr4 TeamLink__Logo">
             <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/${team.id}" target="_blank" rel="noopener noreferrer">
@@ -938,7 +939,7 @@
     if(event.target.closest('a')) return;
 
     currentCellId = cell.getAttribute('data-cell-id');
-    const cellContent = cell.innerText;
+    const cellContent = cell.getAttribute('data-cell-name');
     
     // Update Header
     document.querySelector('.Drawer__Title').innerText = `Comments on "${cellContent}"`;
