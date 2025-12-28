@@ -525,14 +525,14 @@
     font-size: 14px;
     border: 1px solid rgba(255,255,255,0.05);
   }
-  .Comment-User { font-weight: bold; color: #ff8a00; font-size: 12px; margin-bottom: 5px; display: block; }
-  .Comment-Text { color: black; margin: 0; }
+  .Comment-User { font-weight: bold; color: #ff8a00; font-size: 11px; margin-bottom: 5px; display: block; }
+  .Comment-Text { color: black; font-size: 16px; margin: 0; }
   
   .Reply-Btn {
     background: none; border: none; color: rgba(255,255,255,0.5);
-    font-size: 11px; cursor: pointer; margin-top: 5px;
+    font-size: 11px; cursor: pointer; margin-top: 5px; color: black;
   }
-  .Reply-Btn:hover { color: white; text-decoration: underline; }
+  .Reply-Btn:hover { text-decoration: underline; }
 
   /* Replies Styling */
   .Reply-List { margin-left: 20px; margin-top: 10px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.1); }
@@ -942,7 +942,7 @@
     const cellContent = cell.getAttribute('data-cell-name');
     
     // Update Header
-    document.querySelector('.Drawer__Title').innerText = `Comments on "${cellContent}"`;
+    document.querySelector('.Drawer__Title').innerText = `Comments on ${cellContent}`;
     
     // Open UI
     document.getElementById('commentDrawer').classList.add('open');
