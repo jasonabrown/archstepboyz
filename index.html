@@ -763,14 +763,16 @@
       </td>
       `;
 
-        while(CONFERENCES[item.childElementCount - 1] !== team.conf && item.childElementCount < 15) {
+        console.log(item.childElementCount);
+        console.log(team.conf);
+        while(item.childElementCount-1 < team.conf && team.conf != 999 && item.childElementCount < 15) {
           item.insertAdjacentHTML('beforeend', placeholderHtmlString);
         }
         item.insertAdjacentHTML('beforeend', htmlString);
       });
     };
 
-    const apiEndpoint = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams';
+    const apiEndpoint = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc';
     apiReq(apiEndpoint, 'GET').then( (res => {
       appendTeamCells(res);
       
