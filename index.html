@@ -805,242 +805,11 @@
 
 </body>
 <script>
-      const CONFERENCES = ['ACC', 'Big 12', 'Big East', 'Big Ten', 'SEC', 'Mid-Major'];
-      const CONF_TABLE = document.getElementById('CONF_TABLE');
-      const apiEndpoint2 = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Comments';
-
-      /* POPULATE TABLE */ 
-      async function apiReq(url, method, data) {
-        try {
-          const response = await fetch(url, {
-            method: method, 
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'sb_publishable_mZVo1bfw-ChB9iCx1V5QwA_UUKrCx8o',
-              'apikey': 'sb_publishable_mZVo1bfw-ChB9iCx1V5QwA_UUKrCx8o',
-            },
-            body: data == null ? null : JSON.stringify(data) 
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          if (method === 'GET') {
-            const responseData = await response.json();
-            return responseData;
-          } else {
-            return;
-          }
-
-      } catch (error) {
-        console.error('Fetch error:', error);
-        throw error;
-      }
-    }
-
-    const placeholderHtmlString = `
-    <!-- X  -->
-    <td class="Table__TD">
-    </td>
-    `
-
-
-    const appendTeamCells = (data) => {
-      data.forEach((team, idx) => {
-      const item = document.querySelector(`tr[data-idx="${team.conf_pos}"]`);
-      
-      // We inject the name and id into the template string below
-        const htmlString = `
-      <td class="Table__TD" data-cell-id="${team.conf}-${team.conf_pos-1}" data-cell-name="${team.name}">
-        <div class="team-link flex items-centerclr-gray-03 mascot-row mascot-row">
-          <span class="pr4 TeamLink__Logo">
-            <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/${team.id}" target="_blank" rel="noopener noreferrer">
-              <img 
-                alt="${team.name}" 
-                class="Image Logo Logo__sm" 
-                title="${team.name}" 
-                data-mptype="image" 
-                src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${team.id}.png&h=200&w=200"
-              >
-            </a>
-          </span>
-          <div class="meta-stack">
-            ${team.change > 0 ?
-            '<div class="trend-tag trend-up"><i>&#9650;</i>' + team.change.toString() + '</div>' :
-            team.change < 0 ?
-            '<div class="trend-tag trend-down"><i>&#9660;</i>' + (-1 * team.change).toString() + '</div>' :
-            '<div class="trend-tag trend-neutral"><span class="dash-bar"></span></div>'}
-            ${team.rank != null ? '<div class="ovr-tag">#' + team.rank.toString() + '</div>' : ''}
-          </div>
-        </div>
-      </td>
-      `;
-
-        while(item.childElementCount-1 < team.conf && team.conf != 999 && item.childElementCount < 15) {
-          item.insertAdjacentHTML('beforeend', placeholderHtmlString);
-        }
-        item.insertAdjacentHTML('beforeend', htmlString);
-      });
-    };
-
-    const apiEndpoint = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc';
-    apiReq(apiEndpoint, 'GET').then( (res => {
-      appendTeamCells(res);
-      
-     const header = document.querySelector('.Table__THEAD');
-      setTimeout(() => {
-        header.classList.add('header-enter');
-      }, 100); // 100ms delay before header starts
-
-      const rows = document.querySelectorAll('.Table__TBODY .Table__TR');
-      rows.forEach((row, index) => {
-        setTimeout(() => {
-          row.classList.add('row-enter');
-        }, 300 + (index * 100)); // Start rows 300ms in, then cascade
-      }); 
-    const cells = document.querySelectorAll('.Table__TD');
-    
-    cells.forEach(cell => {
-      // Check if cell has initial comments to show the dot indicator
-      const cellId = cell.getAttribute('data-cell-name');
-      apiReq(apiEndpoint2, 'GET').then( (commentDB) => {
-        if(commentDB?.filter(comment => comment.team === cellId).length > 0) {
-          cell.classList.add('has-comments');
-        }
-      });
-
-      // Add click listener
-      cell.addEventListener('click', () => openDrawer(cell));
-    });
-
-    const inputField = document.getElementById('commentInput');
-    const sendButton = document.getElementById('sendBtn');
-
-    inputField.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); 
-            sendButton.click(); 
-        }
-    })
-    }));
-
-      const gridBtn = document.getElementById('gridViewBtn');
-      const listBtn = document.getElementById('listViewBtn');
-      const mainContent = document.getElementById('MainContent');
-
-      function switchToGrid() {
-          gridBtn.classList.add('active');
-          listBtn.classList.remove('active');
-          mainContent.classList.remove('is-list-view');
-      }
-
-      function switchToList() {
-          listBtn.classList.add('active');
-          gridBtn.classList.remove('active');
-          mainContent.classList.add('is-list-view');
-      }
-
-      gridBtn.addEventListener('click', switchToGrid);
-      listBtn.addEventListener('click', switchToList);
-
-
-  // --- 1. STATE MANAGEMENT ---
-  // Store comments in memory (reset on refresh). 
-  // Structure: { 'cell-id': [ {id, user, text, replies: []} ] }
-  const commentsDB = 
-    [
-      { id: 1, author: 'Hilliard/Ohio', message: 'Bruce Thorton is the best guard in the country', team: 'OSU', created_at: '2025-12-28 21:59:06.212862+00' }
-    ];
-    
-  //const apiEndpoint2 = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc';
-  //var commentsDB = apiReq(apiEndpoint2, 'GET');
-
-  let currentCellId = null;
-
-  // --- 3. DRAWER LOGIC ---
-  function openDrawer(cell) {
-
-    if(event.target.closest('a')) return;
-
-    currentCellId = cell.getAttribute('data-cell-name');
-    const cellContent = cell.getAttribute('data-cell-name');
-    
-    // Update Header
-    document.querySelector('.Drawer__Title').innerText = `Comments on ${cellContent}`;
-    
-    // Open UI
-    document.getElementById('commentDrawer').classList.add('open');
-    
-    // Render Comments
-    renderComments();
-  }
-
-  function closeDrawer() {
-    document.getElementById('commentDrawer').classList.remove('open');
-    currentCellId = null;
-  }
-
-  // --- 4. RENDER LOGIC ---
-  function renderComments() {
-    const container = document.getElementById('drawerContent');
-    apiReq(apiEndpoint2, 'GET').then( (commentDB) => {
-    const comments = commentDB?.filter(comment => comment.team === currentCellId && comment.reply_to_id == null) ?? [];
-    
-    if (comments.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center; color: rgba(255,255,255,0.3); margin-top: 50px;">
-          <i class="fa-regular fa-comments" style="font-size: 30px; margin-bottom:10px;"></i><br>
-          No comments yet.<br>Start the discussion!
-        </div>`;
-      return;
-    }
-
-    let html = '';
-    comments.forEach(comment => {
-      const replies = commentDB?.filter(c => c.reply_to_id == comment.id);
-      html += `
-        <div class="Comment-Item">
-          <div class="Comment-Box">
-            <span class="Comment-User">${comment.author}</span>
-            <p class="Comment-Text">${comment.message}</p>
-            <button class="Reply-Btn" onclick="enableReply(${comment.id})">Reply</button>
-            
-            <div id="reply-input-${comment.id}" class="Input-Group" style="display:none; margin-top:10px;">
-              <input type="text" id="reply-text-${comment.id}" class="Input-Field" placeholder="Reply..." style="font-size: 12px; padding: 5px;">
-              <button id="reply-submit-${comment.id}" class="Send-Btn" onclick="submitReply(${comment.id})" style="padding: 2px 10px; font-size: 12px;">Send</button>
-            </div>
-          </div>
-          
-          <div class="Reply-List">
-            ${replies?.map(reply => `
-              <div class="Comment-Box" style="margin-top: 10px; background: rgba(255,255,255,0.03);">
-                <span class="Comment-User" style="color: #2ed573">${reply.author}</span>
-                <p class="Comment-Text">${reply.message}</p>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    });
-
-    container.innerHTML = html;
-
-    comments.forEach(comment => {
-      const inputField = document.getElementById(`reply-input-${comment.id}`);
-      const sendButton = document.getElementById(`reply-submit-${comment.id}`);
-
-    inputField.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); 
-            sendButton.click(); 
-        }
-    });
-    });
-    });
-  }
-
-  // --- 5. INTERACTION LOGIC ---
+  const CONFERENCES = ['ACC', 'Big 12', 'Big East', 'Big Ten', 'SEC', 'Mid-Major'];
+  const CONF_TABLE = document.getElementById('CONF_TABLE');
+  const TEAMS_ENDPOINT = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc';
+  const COMMENTS_ENDPOINT = 'https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Comments';
+  
   async function getCityFromIP() {
     try {
       const response = await fetch('https://ipapi.co/json');
@@ -1052,8 +821,224 @@
       return 'New York/New York';
     }
   }
+
+  /* DB API Requests */
+  async function apiReq(url, method, data) {
+    try {
+      const response = await fetch(url, {
+        method: method, 
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'sb_publishable_mZVo1bfw-ChB9iCx1V5QwA_UUKrCx8o',
+          'apikey': 'sb_publishable_mZVo1bfw-ChB9iCx1V5QwA_UUKrCx8o',
+        },
+        body: data == null ? null : JSON.stringify(data) 
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (method === 'GET') {
+        const responseData = await response.json();
+        return responseData;
+      } else {
+        return;
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
+    }
+  }
+
+  /* POPULATE TABLE */
+  const appendTeamCells = (data) => {
+    const placeholderHtmlString = `
+      <!-- X  -->
+      <td class="Table__TD">
+      </td>
+      `;
+
+    data.forEach((team, idx) => {
+      const item = document.querySelector(`tr[data-idx="${team.conf_pos}"]`);
+      
+      const htmlString = `
+        <td class="Table__TD" data-cell-id="${team.conf}-${team.conf_pos-1}" data-cell-name="${team.name}">
+          <div class="team-link flex items-centerclr-gray-03 mascot-row mascot-row">
+            <span class="pr4 TeamLink__Logo">
+              <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/${team.id}" target="_blank" rel="noopener noreferrer">
+                <img 
+                  alt="${team.name}" 
+                  class="Image Logo Logo__sm" 
+                  title="${team.name}" 
+                  data-mptype="image" 
+                  src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${team.id}.png&h=200&w=200"
+                >
+              </a>
+            </span>
+            <div class="meta-stack">
+              ${team.change > 0 ?
+              '<div class="trend-tag trend-up"><i>&#9650;</i>' + team.change.toString() + '</div>' :
+              team.change < 0 ?
+              '<div class="trend-tag trend-down"><i>&#9660;</i>' + (-1 * team.change).toString() + '</div>' :
+              '<div class="trend-tag trend-neutral"><span class="dash-bar"></span></div>'}
+              ${team.rank != null ? '<div class="ovr-tag">#' + team.rank.toString() + '</div>' : ''}
+            </div>
+          </div>
+        </td>
+        `;
+
+      while(item.childElementCount-1 < team.conf && team.conf != 999 && item.childElementCount < 15) {
+        item.insertAdjacentHTML('beforeend', placeholderHtmlString);
+      }
+      item.insertAdjacentHTML('beforeend', htmlString);
+    });
+  };
+
+  apiReq(TEAMS_ENDPOINT, 'GET').then( (res) => {
+    appendTeamCells(res);
+    
+    const header = document.querySelector('.Table__THEAD');
+    setTimeout(() => {
+      header.classList.add('header-enter');
+    }, 100); 
+
+    const rows = document.querySelectorAll('.Table__TBODY .Table__TR');
+    rows.forEach((row, index) => {
+      setTimeout(() => {
+        row.classList.add('row-enter');
+      }, 300 + (index * 100)); // Start rows 300ms in, then cascade
+    }); 
+    
+    const cells = document.querySelectorAll('.Table__TD');
+    cells.forEach(cell => {
+      const team = cell.getAttribute('data-cell-name');
+      apiReq(COMMENTS_ENDPOINT, 'GET').then( (commentDB) => {
+        if(commentDB?.filter(comment => comment.team === team).length > 0) {
+          cell.classList.add('has-comments');
+        }
+      });
+      cell.addEventListener('click', () => openDrawer(cell));
+    });
+  });
+
+  const inputField = document.getElementById('commentInput');
+  const sendButton = document.getElementById('sendBtn');
+
+  inputField.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); 
+      sendButton.click(); 
+    }
+  });
+
+  // TODO: Implement list view
+  const gridBtn = document.getElementById('gridViewBtn');
+  const listBtn = document.getElementById('listViewBtn');
+  const mainContent = document.getElementById('MainContent');
+
+  function switchToGrid() {
+    gridBtn.classList.add('active');
+    listBtn.classList.remove('active');
+    mainContent.classList.remove('is-list-view');
+  }
+
+  function switchToList() {
+    listBtn.classList.add('active');
+    gridBtn.classList.remove('active');
+    mainContent.classList.add('is-list-view');
+  }
+
+  gridBtn.addEventListener('click', switchToGrid);
+  listBtn.addEventListener('click', switchToList);
+
+  /* COMMENTS */
+  let currentCellId = null;
+
+  // Helper: Show red dot on the cell if comments exist
+  function updateCellIndicator() {
+    const cell = document.querySelector(`.Table__TD[data-cell-id="${currentCellId}"]`);
+    if (cell) cell.classList.add('has-comments');
+  }
+
+  function closeDrawer() {
+    document.getElementById('commentDrawer').classList.remove('open');
+    currentCellId = null;
+  }
+  
+  function openDrawer(cell) {
+    if(event.target.closest('a')) return;
+
+    closeDrawer();
+    renderComments();
+    
+    currentCellId = cell.getAttribute('data-cell-name');
+    
+    // TODO: Update Header (maybe an image?)
+    document.querySelector('.Drawer__Title').innerText = `Comments on ${cell.getAttribute('data-cell-name')}`;
+    
+    setTimeout(() => {
+      document.getElementById('commentDrawer').classList.add('open');
+    }, 300); 
+  }
+
+  function renderComments() {
+    const container = document.getElementById('drawerContent');
+    
+    apiReq(COMMENTS_ENDPOINT, 'GET').then( (commentDB) => {
+      const comments = commentDB?.filter(comment => comment.team === currentCellId && comment.reply_to_id == null) ?? [];
+    
+      if (comments.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; color: rgba(255,255,255,0.3); margin-top: 50px;">
+            <i class="fa-regular fa-comments" style="font-size: 30px; margin-bottom:10px;"></i><br>
+            No comments yet.<br>Start the discussion!
+          </div>`;
+        return;
+      }
+
+      let html = '';
+      comments.forEach(comment => {
+        const replies = commentDB?.filter(c => c.reply_to_id == comment.id);
+        html += `
+          <div class="Comment-Item">
+            <div class="Comment-Box">
+              <span class="Comment-User">${comment.author}</span>
+              <p class="Comment-Text">${comment.message}</p>
+              <button class="Reply-Btn" onclick="enableReply(${comment.id})">Reply</button>
+            
+              <div id="reply-input-${comment.id}" class="Input-Group" style="display:none; margin-top:10px;">
+                <input type="text" id="reply-text-${comment.id}" class="Input-Field" placeholder="Reply..." style="font-size: 16px; padding: 5px;">
+                <button id="reply-submit-${comment.id}" class="Send-Btn" onclick="submitReply(${comment.id})" style="padding: 2px 10px; font-size: 16px;">Send</button>
+              </div>
+            </div>
+          
+            <div class="Reply-List">
+              ${replies?.map(reply => `
+                <div class="Comment-Box" style="margin-top: 10px; background: rgba(255,255,255,0.03);">
+                  <span class="Comment-User" style="color: #2ed573">${reply.author}</span>
+                  <p class="Comment-Text">${reply.message}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      comments.forEach(comment => {
+        const inputField = document.getElementById(`reply-input-${comment.id}`);
+        const sendButton = document.getElementById(`reply-submit-${comment.id}`);
+
+        inputField.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter') {
+            event.preventDefault(); 
+            sendButton.click(); 
+          }
+        });
+      });
+    });
+  }
  
-  // Submit a top-level comment
   function submitComment() {
     const input = document.getElementById('commentInput');
     const text = input.value.trim();
@@ -1061,53 +1046,49 @@
 
     getCityFromIP().then((str) => {
 
-    apiReq(apiEndpoint2, 'POST', {
-      id: Date.now(),
-      author: str, 
-      message: text,
-      team: currentCellId,
-    }).then( () => {
-      input.value = '';
-      updateCellIndicator();
-      renderComments();
-    });
+      apiReq(COMMENTS_ENDPOINT, 'POST', {
+        id: Date.now(),
+        author: str, 
+        message: text,
+        team: currentCellId,
+      }).then( () => {
+        input.value = '';
+        updateCellIndicator();
+        renderComments();
+      });
     });
   }
 
-  // Show the reply input field for a specific comment
   function enableReply(commentId) {
     const el = document.getElementById(`reply-input-${commentId}`);
     el.style.display = 'flex';
   }
 
-  // Submit a reply to a comment
   function submitReply(parentId) {
     const input = document.getElementById(`reply-text-${parentId}`);
     const text = input.value.trim();
     if (!text) return;
 
-    const parentComment = commentsDB.find(c => c.team === currentCellId && c.id === parentId);
-    if (parentComment) {
-      getCityFromIP().then((str) => {
-        apiReq(apiEndpoint2, 'POST', {
-          id: Date.now(),
-          author: str,
-          message: text,
-          team: currentCellId,
-          reply_to_id: parentId,
-        }).then( () => {
-          renderComments();
+    apiReq(COMMENTS_ENDPOINT, 'GET').then( (commentDB) => {
+      const parentComment = commentDB.find(c => c.team === currentCellId && c.id === parentId);
+    
+      if (parentComment) {
+        getCityFromIP().then((str) => {
+          apiReq(COMMENTS_ENDPOINT, 'POST', {
+            id: Date.now(),
+            author: str,
+            message: text,
+            team: currentCellId,
+            reply_to_id: parentId,
+          }).then( () => {
+            renderComments();
+          });
         });
-      });
-    } else {
-      renderComments();
-    }
+      } else {
+        renderComments();
+      }
+    });
   }
 
-  // Helper: Show the pink dot on the cell if comments exist
-  function updateCellIndicator() {
-    const cell = document.querySelector(`.Table__TD[data-cell-id="${currentCellId}"]`);
-    if (cell) cell.classList.add('has-comments');
-  }
   </script>
 </html>
