@@ -13,6 +13,33 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    padding: 16px 20px 24px 20px; /* Added more bottom padding for breathing room */
+    border-bottom: 1px solid #f2f2f7;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: 34px; /* iOS Large Title */
+    letter-spacing: -0.02em;
+    margin-bottom: 8px; /* Space between title and subheader */
+    color: #000;
+  }
+
+  .subheader {
+    font-size: 17px; /* iOS Standard Body Size */
+    line-height: 1.4; /* Better readability for multiple lines */
+    color: #8e8e93; /* iOS Secondary Label Color */
+    font-weight: 400;
+  }
+
   body {
     background-color: white;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -103,27 +130,38 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-/* --- LOGIN BUTTON (HEADER) --- */
-.Login-Trigger {
-  margin-left: auto; /* Pushes button to the far right */
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #636e72;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-family: 'Oswald', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  height: fit-content;
-  align-self: center;
-}
+  /* --- LOGIN BUTTON --- */
+  .Login-Trigger {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #636e72;
+  
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 
-.Login-Trigger:hover {
-  background: white;
-  color: #e17055;
-}
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    
+    margin-bottom: 30px;
+    
+    position: sticky;
+    left: 0;
+    width: max-content;
+    height: fit-content;
+
+    animation: fadeInDown 0.8s ease-out;
+    transition: all 0.3s ease;
+  }
+
+  .Login-Trigger:hover {
+    background: white;
+    color: #e17055;
+  }
 
 /* --- CENTERED MODAL --- */
 .Modal-Overlay {
@@ -338,6 +376,89 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
   .Toggle-Btn.active svg { fill: #e17055; }
+
+  /* LIST */
+  .list-container {
+    display: none;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    min-width: 50px;
+    max-width: 600px;
+    width: 100vw;
+    margin: 0 auto;
+    
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+ 
+        .ranking-list {
+            list-style: none;
+            width: 100%;
+        }
+
+        /* 4. The Row (Flexbox) */
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e5ea;
+            min-height: 64px;
+        }
+
+        /* 5. Rank Number */
+        .rank {
+            font-size: 17px;
+            color: #8e8e93;
+            font-weight: 600;
+            width: 28px;
+            flex-shrink: 0;
+        }
+
+        /* 6. Team Name (The Hero) */
+        .team-name {
+            flex-grow: 1;
+            font-size: 19px;
+            font-weight: 600;
+            color: #000000;
+            padding-right: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 7. Stats Container */
+        .stats-container {
+            display: flex;
+            gap: 16px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .stat-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1c1c1e;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #8e8e93;
+            margin-top: 2px;
+            letter-spacing: 0.03em;
+        }
+
+        .streak-win { color: #34c759; }
+        .streak-loss { color: #ff3b30; }
+
 
   /* TABLE */
   .table-container {
@@ -853,11 +974,11 @@
   <div class="View-Toggle">
     <button class="Toggle-Btn active" id="gridViewBtn">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 10h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zM10 4h4v4h-4zm6 0h4v4h-4zM4 4h4v4H4zm6 12h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4z"/></svg>
-      Grid
+      Projections
     </button>
     <button class="Toggle-Btn" id="listViewBtn">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-      List
+      PBL
     </button>
   </div>
 </div>
@@ -1040,6 +1161,50 @@
   </tr>
 </tbody>
 </table>
+</div>
+
+<div class="list-container">
+  <header>
+    <h1>PBL</h1>
+    <p class="subheader">
+    Rules: These teams and/or players cannot, under any circumstances, be a part of a group parlay (1 or more persons), unless expressly approved by a group majority vote. 
+    </p>
+    <p class="subheader">
+    <i>Last updated: 12.20.2025</i>
+    </p>
+  </header>
+
+    <ol class="ranking-list"> 
+        <li class="team-row">
+            <span class="rank">1</span>
+            <div class="team-name">Mark Anti-Pope</div>
+            <div class="stats-container">
+                <div class="stat-col">
+                    <span class="stat-value">9-4</span>
+                    <span class="stat-label">REC</span>
+                </div>
+                <div class="stat-col">
+                    <span class="stat-value streak-win">W4</span>
+                    <span class="stat-label">STRK</span>
+                </div>
+            </div>
+        </li>
+
+        <li class="team-row">
+            <span class="rank">2</span>
+            <div class="team-name">Will Fade</div>
+            <div class="stats-container">
+                <div class="stat-col">
+                    <span class="stat-value">9-4</span>
+                    <span class="stat-label">REC</span>
+                </div>
+                <div class="stat-col">
+                    <span class="stat-value streak-win">W2</span>
+                    <span class="stat-label">STRK</span>
+                </div>
+            </div>
+        </li>
+    </ol>
 </div>
 
 <div class="Drawer" id="commentDrawer">
@@ -1226,13 +1391,21 @@
   function switchToGrid() {
     gridBtn.classList.add('active');
     listBtn.classList.remove('active');
-    mainContent.classList.remove('is-list-view');
+
+    const list = document.querySelector('.list-container');
+    list.style.display = 'none';
+    const table = document.querySelector('.table-container');
+    table.style.display = 'flex';
   }
 
   function switchToList() {
     listBtn.classList.add('active');
     gridBtn.classList.remove('active');
-    mainContent.classList.add('is-list-view');
+    
+    const table = document.querySelector('.table-container');
+    table.style.display = 'none';
+    const list = document.querySelector('.list-container');
+    list.style.display = 'flex';
   }
 
   gridBtn.addEventListener('click', switchToGrid);
