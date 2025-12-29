@@ -478,20 +478,28 @@
   }
   
   .Drawer {
+    background: #ffffff;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    box-shadow: -5px 0 30px rgba(0,0,0,0.1); /* Soft shadow on the left */
+    backdrop-filter: blur(20px);
+    
+    display: flex;
+    flex-direction: column;
     position: fixed;
+    z-index: 1000;
+
     top: 0;
     right: -400px; /* Hidden by default */
     width: 350px;
     height: 100%;
-    background: #ffffff;
-    backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(255,255,255,0.1);
-    transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
+    /*
+    height: 100vh; 
+    height: 100dvh;
+    */
 
-    box-shadow: -5px 0 30px rgba(0,0,0,0.1); /* Soft shadow on the left */
+    /* overscroll-behavior: contain; */
+    
+    transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .Drawer.open { right: 0; }
@@ -511,6 +519,9 @@
     flex: 1;
     overflow-y: auto;
     padding: 20px;
+    padding-bottom: 80px;
+
+    -webkit-overflow-scrolling: touch;
   }
 
   .Drawer__Footer {
@@ -557,14 +568,33 @@
   }
   .Send-Btn:hover { background: #ff8a00; }
 
-    /* Prevent zoom on mobile */
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    textarea,
-    select {
-      font-size: 16px;
+  /* Prevent zoom on mobile */
+  .Input-Field,
+  input[type="text"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    max-height: 100px;
+  }
+
+  @media (max-width: 768px) {
+    .Drawer {
+      width: 100%;      
+      right: -100%;      
+      border-left: none; 
+    
+      box-shadow: none;
     }
+  
+    .Drawer.open {
+      right: 0;
+    }
+
+    .Drawer__Close {
+      font-size: 24px;   
+      padding: 10px;
+    }
+  }
 
 </style>
 </head>
