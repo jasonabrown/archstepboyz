@@ -452,42 +452,86 @@ height: fit-content;
   margin: 5px 0;
 }
 
-
-
-
-
-
-/* --- UPDATED AUTH MODAL STYLES --- */
-
 .Auth-Box {
-  /* Remove padding here so the slider goes edge-to-edge */
+  /* Remove padding so the slider touches edges */
   padding: 0 !important; 
   
-  /* CRITICAL: content that slides out must be hidden */
+  /* Clips the content that is sliding out/blurred */
   overflow: hidden; 
   
   width: 90%;
   max-width: 400px;
-  height: 400px;
+  height: 420px;
   border-radius: 20px;
   background: white;
-  transition: height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative; /* Establish context for absolute positioning */
+  position: relative;
+  
+  /* Smoothly animate height changes */
+  transition: height 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .Auth-Slider {
   display: flex;
-  width: 200%; /* Perfectly double the width */
-  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  width: 200%; /* Two views side-by-side */
+  
+  /* The Slide Animation */
+  /* We use a longer duration (0.6s) with a very smooth ease-out curve */
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .Auth-View {
-  width: 50%;        /* Each view is exactly half the slider */
-  flex-shrink: 0;    /* Prevent flexbox from squishing the views */
-  
-  /* Restore the padding here (moved from Auth-Box) */
+  width: 50%;        /* Each view is half the slider */
+  flex-shrink: 0;    /* Prevent squishing */
   padding: 40px 30px; 
-  box-sizing: border-box; 
+  box-sizing: border-box;
+  
+  /* Default Transition settings for the inner content */
+  transition: 
+    opacity 0.4s ease, 
+    transform 0.4s ease, 
+    filter 0.4s ease;
+}
+
+/* --- LOGIN STATE (Default) --- */
+/* 1. Slide Position */
+.Auth-Slider.show-login { 
+  transform: translateX(0); 
+}
+
+/* 2. Inner Content Styling */
+/* When Login is active, Signup should be faded/blurred */
+.Auth-Slider.show-login #view-signup {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(4px);
+}
+.Auth-Slider.show-login #view-login {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  /* Slight delay so it sharpens AFTER it starts sliding in */
+  transition-delay: 0.1s; 
+}
+
+/* --- SIGNUP STATE --- */
+/* 1. Slide Position */
+.Auth-Slider.show-signup { 
+  transform: translateX(-50%); 
+}
+
+/* 2. Inner Content Styling */
+/* When Signup is active, Login should be faded/blurred */
+.Auth-Slider.show-signup #view-login {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(4px);
+}
+.Auth-Slider.show-signup #view-signup {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  /* Slight delay so it sharpens AFTER it starts sliding in */
+  transition-delay: 0.1s;
 }
 
 /* Close button positioning needs a tweak since we removed box padding */
@@ -496,20 +540,6 @@ height: fit-content;
   right: 15px;
   z-index: 10; /* Ensure it sits on top of the slider */
 }
-
-
-
-
-
-
-
-
-
-
-/* Default State (Login View) */
-.Auth-Slider.show-login { transform: translateX(0); }
-/* Signup State */
-.Auth-Slider.show-signup { transform: translateX(-50%); }
 
 /* --- FORM PIZZAZZ --- */
 .Auth-Toggle {
@@ -1558,6 +1588,9 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
           <button type="submit" class="Submit-Btn">Sign In</button>
         </form>
         <div class="Auth-Toggle">
+          <a onclick="forgotPassword()">Forgot password</a>
+        </div>
+        <div class="Auth-Toggle">
           Don't have an account? <a onclick="toggleAuthMode('signup')">Sign Up</a>
         </div>
       </div>
@@ -2132,7 +2165,7 @@ function toggleAuthMode(mode) {
     slider.classList.remove('show-signup');
     slider.classList.add('show-login');
     // box.style.height = '380px';
-    box.style.height = '400px';
+    box.style.height = '420px';
   }
 }
 
@@ -2216,6 +2249,8 @@ async function handleSignup(event) {
     // 4. Hide Form, Show Success
     formContent.style.display = 'none';
     successContent.style.display = 'flex';
+    const box = document.querySelector('.Auth-Box');
+    box.style.height = '420px';
     
     // Reset button text for next time
     btn.innerText = originalText;
@@ -2327,5 +2362,22 @@ async function handleLogout() {
     AUTHED_USER = null;  // TODO: don't rely on this global
   }
 }
+
+async function forgotPassword() {
+  return;
+  /*
+  const { error } = await db_client.auth.resetPasswordForEmail("", {
+    redirectTo: 'https://archstepboyz.github.io/archstepboyz', 
+  });
+
+  if (error) {
+    console.error('Error sending password reset email:', error.message);
+    alert('Failed to send reset email. Please check your email address.');
+  } else {
+    alert('Password reset email sent. Check your inbox!');
+  }
+  */
+}
+
 </script>
 </html>
