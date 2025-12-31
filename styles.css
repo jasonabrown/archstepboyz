@@ -51,7 +51,7 @@ margin: 0 auto;
 
 padding: 20px 5px 20px 5px; /* NOW */
 
-width: 100%;
+width: max-content;
 max-width: 700px;
 
 /* TODO: Make it start zoomed out fully on mobile
@@ -687,15 +687,15 @@ animation: fadeInDown 0.8s ease-out;
 /* LIST */
 .list-container {
   display: none;
-  /* flex-direction: column;
-  flex-wrap: wrap; */
+  flex-direction: column;
+  flex-wrap: wrap;
   box-sizing: border-box;
 
   min-width: 400px;
   max-width: 600px;
   /* max-width: 600px; */
   /* max-width: 450px; iPhone Max width sweet spot */
-  width: 100%;
+  width: 100vw;
   /* width: 200%; */
   margin: 0 auto;
   /* padding: 0 20px; */
@@ -831,13 +831,15 @@ li {
 
     /* NEW */
     .Ranking-Container {
-        width: 100%;
+        width: 100vw;
         min-width: 400px;
         max-width: 600px; /* iPhone Max width sweet spot */
         padding: 20px 20px 20px 20px; /* 50px bottom if floating fixed fab-button */
         box-sizing: border-box;
         animation: fadeInDown 0.8s ease-out;
         margin: 0 auto;
+        flex-direction: column;
+        flex-wrap: wrap;
     }
 
     .Ranking-Row {
