@@ -23,11 +23,20 @@ margin-bottom: 8px; /* Space between title and subheader */
 color: #000;
 }
 
+
+h2 {
+font-weight: 600;
+font-size: 30px; /* iOS Large Title */
+letter-spacing: -0.01em;
+margin-bottom: 8px; /* Space between title and subheader */
+color: #000;
+}
+
 .subheader {
-font-size: 17px; /* iOS Standard Body Size */
+font-size: 16px; /* iOS Standard Body Size */
 line-height: 1.4; /* Better readability for multiple lines */
 color: #8e8e93; /* iOS Secondary Label Color */
-font-weight: 400;
+font-weight: 300;
 }
 
 body {
@@ -666,16 +675,21 @@ animation: fadeInDown 0.8s ease-out;
 /* LIST */
 .list-container {
 display: none;
-flex-direction: column;
-flex-wrap: wrap;
+/* flex-direction: column;
+flex-wrap: wrap; */
+box-sizing: border-box;
 
 min-width: 20px;
 max-width: 600px;
+/* max-width: 450px; iPhone Max width sweet spot */
 width: 100vw;
-margin: 0 auto;
+/* width: 200%; */
+/* margin: 0 auto; */
+/* padding: 0 20px; */
 
 overflow-x: auto;
 -webkit-overflow-scrolling: touch;
+animation: fadeInDown 0.8s ease-out;
 }
 
     .ranking-list {
@@ -705,8 +719,9 @@ overflow-x: auto;
     /* 6. Team Name (The Hero) */
     .team-name {
         flex-grow: 1;
-        font-size: 19px;
-        font-weight: 600;
+        font-size: 18px;
+        font-weight: 550;
+        font-family: Oswald;
         color: #000000;
         padding-right: 12px;
         white-space: nowrap;
@@ -744,6 +759,145 @@ overflow-x: auto;
 
     .streak-win { color: #34c759; }
     .streak-loss { color: #ff3b30; }
+
+
+    /* NEW */
+    .Ranking-Container {
+        width: 100%;
+        /* max-width: 450px; iPhone Max width sweet spot */
+        /* padding: 0 20px; */
+        box-sizing: border-box;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .Ranking-Row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        /* Subtle neumorphic separation */
+        border-bottom: 1px solid #f1f2f6; 
+        padding: 16px 10px;
+        margin-bottom: 8px;
+        transition: transform 0.2s ease, background 0.2s;
+    }
+
+    .Ranking-Row:active {
+        background-color: #f9f9f9;
+        transform: scale(0.98);
+    }
+
+    /* Rank Number: Uses your 'Fugaz One' font */
+    .Row__Rank {
+        font-family: 'Fugaz One', cursive;
+        font-size: 24px;
+        color: #b2bec3; /* Default gray for lower ranks */
+        width: 40px;
+        text-align: center;
+        margin-right: 15px;
+        /* Text shadow for depth */
+        text-shadow: 1px 1px 0px rgba(0,0,0,0.1); 
+    }
+
+    /* Top 3 Ranks get special colors */
+    .Ranking-Row:nth-child(1) .Row__Rank { color: #e17055; font-size: 28px; } /* Gold/Orange */
+    .Ranking-Row:nth-child(2) .Row__Rank { color: #2d3436; } /* Silver/Dark */
+    .Ranking-Row:nth-child(3) .Row__Rank { color: #636e72; } /* Bronze */
+
+    /* Team Name: The Hero */
+    .Row__Team {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .Team__Name {
+        font-family: 'Oswald', sans-serif;
+        font-size: 19px;
+        font-weight: 500;
+        color: #2d3436;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Stats Column: Right Aligned */
+    .Row__Stats {
+        display: flex;
+        gap: 15px;
+        text-align: right;
+        padding-left: 10px;
+    }
+
+    .Stat-Group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .Stat__Value {
+        font-family: 'Oswald', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2d3436;
+    }
+
+    .Stat__Label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #b2bec3;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 2px;
+    }
+
+    /* Win/Loss Colors matching your palette */
+    .is-win { color: #2ed573; } /* Success Green */
+    .is-loss { color: #ff4757; } /* Error Red */
+
+    /* --- FLOATING ACTION BUTTON (Add Team) --- */
+    /* Positions perfectly for thumb use on iPhone */
+    .Fab-Wrapper {
+        position: fixed;
+        bottom: 30px;
+        left: 0; 
+        right: 0;
+        display: flex;
+        justify-content: center;
+        z-index: 100;
+        pointer-events: none; /* Let clicks pass through area around button */
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .Fab-Button {
+        pointer-events: auto;
+        background: linear-gradient(90deg, #ff8a00, #e52e71); /* Your Gradient */
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 14px 28px;
+        font-family: 'Oswald', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 20px rgba(229, 46, 113, 0.4);
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .Fab-Button:active {
+        transform: scale(0.90);
+    }
+    
+    .Fab-Button i { font-size: 18px; }
 
 
 /* TABLE */
@@ -918,8 +1072,8 @@ line-height: 1;
 }
 
 .Logo__tall {
-height: 50px;
-width: 30px;
+height: 40px;
+width: 35px;
 }
 
 .Logo__sm {
@@ -1024,7 +1178,7 @@ border-left: 1px solid rgba(255,255,255,0.1);
 box-shadow: -5px 0 30px rgba(0,0,0,0.1); /* Soft shadow on the left */
 backdrop-filter: blur(20px);
 
-display: flex;
+display: none; /* none to start */
 flex-direction: column;
 position: fixed;
 z-index: 1000;
