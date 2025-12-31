@@ -707,6 +707,61 @@ animation: fadeInDown 0.8s ease-out;
         min-height: 64px;
     }
 
+/* --- DISABLED STATE STYLES --- */
+.team-row.is-disabled {
+    /* 1. Subtle 'Caution Tape' Background Pattern */
+    background: repeating-linear-gradient(
+        45deg,
+        #ffffff,
+        #ffffff 10px,
+        #f9f9f9 10px, /* Very subtle grey contrast */
+        #f9f9f9 20px
+    );
+    /* 2. Dotted border to imply 'under construction' or 'missing' */
+    border: 1px dashed #d1d1d6; 
+}
+
+.Row__Content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        /* padding: 16px 10px; */
+        position: relative;
+        z-index: 2;
+        background: white; /* Covers drawer when closed */
+        width: 100%;
+    }
+
+li {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-row.is-disabled .Row__Content {
+    /* 3. Remove all color (makes green/red streaks grey) */
+    filter: grayscale(100%); 
+    opacity: 0.6;
+}
+
+/* Change the Rank number style when disabled */
+.team-row.is-disabled .Row__Rank {
+    color: transparent;
+    -webkit-text-stroke: 1px #b2bec3; /* Outline effect */
+    text-shadow: none;
+}
+
+/* Change the toggle icon to a lock color */
+.team-row.is-disabled .Row__Toggle {
+    cursor: not-allowed;
+    color: #636e72;
+}
+
+/* Subtle pop when the drawer is open */
+.team-row.drawer-open {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-bottom-color: transparent;
+}
+
     /* 5. Rank Number */
     .rank {
         font-size: 17px;
@@ -859,6 +914,73 @@ animation: fadeInDown 0.8s ease-out;
     /* Win/Loss Colors matching your palette */
     .is-win { color: #2ed573; } /* Success Green */
     .is-loss { color: #ff4757; } /* Error Red */
+
+    /* --- NEW: OPTIONS TOGGLE & DRAWER --- */
+    .Row__Toggle {
+        background: none;
+        border: none;
+        color: #dfe6e9;
+        font-size: 18px;
+        padding: 8px;
+        cursor: pointer;
+        transition: color 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .team-row.drawer-open .Row__Toggle {
+        color: #b2bec3;
+        transform: rotate(90deg); /* Rotate gear when open */
+    }
+
+    /* The hidden drawer area */
+    .Row__Drawer {
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        /* background-color: #fafafa; */
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        padding: 0 20px 0 0; 
+    }
+
+    /* Drawer open state */
+    .team-row.drawer-open .Row__Drawer {
+        max-height: 30px; /* Enough height for buttons */
+        opacity: 1;
+        visibility: visible;
+        padding: 5px 20px 5px 0; /* Add vertical padding on open */
+    }
+
+    /* Creative Action Buttons */
+    .Action-Btn {
+        border: none;
+        margin: 3px;
+        height: 28px;
+        width: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .Action-Btn:active { transform: scale(0.9); }
+
+    .Action-Btn.edit {
+        /* Orange/Pink Gradient */
+        background: linear-gradient(135deg, #ff8a00, #e52e71);
+    }
+    
+    .Action-Btn.delete {
+        /* Red/Danger Gradient */
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+    }
 
     /* --- FLOATING ACTION BUTTON (Add Team) --- */
     /* Positions perfectly for thumb use on iPhone */

@@ -272,7 +272,8 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
 </p>
 
 <ol class="ranking-list"> 
-    <li class="team-row">
+    <li class="team-row" id="pbl-row1">
+      <div class="Row__Content">
         <span class="rank">1</span>
         <span class="pr4 TeamLink__Logo rm_space_test">
           <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/96" target="_blank" rel="noopener noreferrer">
@@ -296,9 +297,21 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
                         <span class="Stat__Label">Strk</span>
                     </div>
         </div>
+        <button class="Row__Toggle" onclick="toggleDrawer('pbl-row1')">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+        <div class="Row__Drawer">
+          <button class="Action-Btn edit" onclick="openModal('pbl-row1')">
+          <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="Action-Btn delete" onclick="deleteTeam('pbl-row1')">
+          <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
     </li>
-
-    <li class="team-row">
+    <li class="team-row is-disabled" id="pbl-row2">
+      <div class="Row__Content">
         <span class="rank">2</span>
         <span class="pr4 TeamLink__Logo rm_space_test">
           <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/152" target="_blank" rel="noopener noreferrer">
@@ -321,6 +334,18 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
                         <span class="Stat__Value is-win">W2</span>
                         <span class="Stat__Label">Strk</span>
                     </div>
+        </div>
+        <button class="Row__Toggle" onclick="toggleDrawer('pbl-row2')">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+        <div class="Row__Drawer">
+          <button class="Action-Btn edit" onclick="openModal('pbl-row2')">
+          <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="Action-Btn delete" onclick="deleteTeam('pbl-row2')">
+          <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
     </li>
 </ol>
@@ -1065,12 +1090,24 @@ function formatMentions(text) {
             }, 300);
         }
 
+        // 2. Toggle Drawer
+        function toggleDrawer(id) {
+            return; //TODO: keep implementing button actions
+            const row = document.getElementById(id);
+            // Close others first (optional, but cleaner UX)
+            document.querySelectorAll('.Ranking-Row-Wrapper').forEach(r => {
+                if (r.id !== id) r.classList.remove('drawer-open');
+            });
+            row.classList.toggle('drawer-open');
+        }
+
         // Add Team Logic
         function handleNewTeam(event) {
             event.preventDefault();
             alert('Coming soon!');
             return;
-            
+           
+            /*
             const name = document.getElementById('inputName').value;
             const record = document.getElementById('inputRecord').value;
             const streak = document.getElementById('inputStreak').value.toUpperCase();
@@ -1110,6 +1147,7 @@ function formatMentions(text) {
             
             // Close modal
             closeAddModal();
+            */
         }
 
 /* LOGIN */
