@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const view = urlParams.get('view');
+  const chat = urlParams.get('chat');
 
   switch (view) {
     case 'PBL':
@@ -577,6 +578,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
           cell.classList.add('has-comments');
         }
         cell.addEventListener('click', () => openDrawer(cell) );
+        if (chat && team === chat) {
+          cell.click();
+        }
       });
     });
   });
@@ -1290,6 +1294,7 @@ async function handleLogout() {
 
 async function forgotPassword() {
   return;
+  
   /*
   const { error } = await db_client.auth.resetPasswordForEmail("", {
     redirectTo: 'https://archstepboyz.github.io/archstepboyz', 
@@ -1302,7 +1307,9 @@ async function forgotPassword() {
     alert('Password reset email sent. Check your inbox!');
   }
   */
+  
 }
+forgotPassword();
 
 </script>
 </html>
