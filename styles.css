@@ -1012,6 +1012,7 @@ li {
         pointer-events: none; /* Let clicks pass through area around button */
         padding-bottom: env(safe-area-inset-bottom);
         max-width: 600px;
+        width: 100vw;
     }
 
     .Fab-Button {
