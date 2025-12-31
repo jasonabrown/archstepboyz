@@ -51,7 +51,8 @@ margin: 0 auto;
 
 padding: 20px 5px 20px 5px; /* NOW */
 
-width: max-content;
+width: 100%;
+max-width: 700px;
 
 /* TODO: Make it start zoomed out fully on mobile
 zoom: 0.75; */
@@ -694,7 +695,7 @@ animation: fadeInDown 0.8s ease-out;
   max-width: 600px;
   /* max-width: 600px; */
   /* max-width: 450px; iPhone Max width sweet spot */
-  width: 100vw;
+  width: 100%;
   /* width: 200%; */
   margin: 0 auto;
   /* padding: 0 20px; */
@@ -830,7 +831,7 @@ li {
 
     /* NEW */
     .Ranking-Container {
-        width: 100vw;
+        width: 100%;
         min-width: 400px;
         max-width: 600px; /* iPhone Max width sweet spot */
         padding: 20px 20px 20px 20px; /* 50px bottom if floating fixed fab-button */
