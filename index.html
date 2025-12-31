@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Oswald:wght@400;600;700&family=Merriweather:wght@300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -257,15 +257,19 @@
 </div>
 
 <div class="list-container">
-<header>
-<h1>PBL</h1>
-<p class="subheader">
+<div class="Ranking-Container">
+
+<div style="text-align:center; margin-bottom:30px;">
+  <h2 style="font-family: 'Fugaz One'; color: #2d3436; margin:0; line-height:1;">PBL</h1>
+  <div style="font-family: 'Fugaz One'; font-size: 16px; color: #e17055; letter-spacing: 0.8px; text-transform:uppercase;">Brought to you by Jersey Mike's</div>
+</div>
+
+<p class="subheader" style="font-family: 'Merriweather'">
 Rules: These teams and/or players cannot, under any circumstances, be a part of a group parlay (1 or more persons), unless expressly approved by a group majority vote. 
 </p>
-<p class="subheader">
+<p class="subheader" style="font-family: 'Merriweather'; padding-top: 10px; padding-bottom: 10px;">
 <i>Last updated: 12.20.2025</i>
 </p>
-</header>
 
 <ol class="ranking-list"> 
     <li class="team-row">
@@ -283,14 +287,14 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
         </span>
         <div class="team-name">Mark Anti-Pope</div>
         <div class="stats-container">
-            <div class="stat-col">
-                <span class="stat-value">9-4</span>
-                <span class="stat-label">REC</span>
-            </div>
-            <div class="stat-col">
-                <span class="stat-value streak-win">W4</span>
-                <span class="stat-label">STRK</span>
-            </div>
+                    <div class="Stat-Group">
+                        <span class="Stat__Value">9-4</span>
+                        <span class="Stat__Label">Rec</span>
+                    </div>
+                    <div class="Stat-Group">
+                        <span class="Stat__Value is-win">W4</span>
+                        <span class="Stat__Label">Strk</span>
+                    </div>
         </div>
     </li>
 
@@ -309,17 +313,58 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
         </span>
         <div class="team-name">Will Fade</div>
         <div class="stats-container">
-            <div class="stat-col">
-                <span class="stat-value">9-4</span>
-                <span class="stat-label">REC</span>
-            </div>
-            <div class="stat-col">
-                <span class="stat-value streak-win">W2</span>
-                <span class="stat-label">STRK</span>
-            </div>
+                    <div class="Stat-Group">
+                        <span class="Stat__Value">9-4</span>
+                        <span class="Stat__Label">Rec</span>
+                    </div>
+                    <div class="Stat-Group">
+                        <span class="Stat__Value is-win">W2</span>
+                        <span class="Stat__Label">Strk</span>
+                    </div>
         </div>
     </li>
 </ol>
+
+
+
+    </div>
+
+    <div class="Fab-Wrapper">
+        <button class="Fab-Button" onclick="openAddModal()">
+            <i class="fa-solid fa-plus"></i> Add Team
+        </button>
+    </div>
+
+    <div id="addTeamModal" class="Modal-Overlay" onclick="closeAddModal(event)">
+        <div class="Modal-Box">
+            <button class="Modal-Close" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="Modal-Header">
+                <h2>New Contender</h2>
+                <p>Add a team to the ranking board.</p>
+            </div>
+
+            <form onsubmit="handleNewTeam(event)">
+                <div class="Input-Wrapper">
+                    <label>Team Name</label>
+                    <input type="text" id="inputName" placeholder="e.g. Chicago Bulls" required>
+                </div>
+
+                <div style="display:flex; gap:15px;">
+                    <div class="Input-Wrapper" style="flex:1;">
+                        <label>Record</label>
+                        <input type="text" id="inputRecord" placeholder="0-0" required>
+                    </div>
+                    <div class="Input-Wrapper" style="flex:1;">
+                        <label>Streak</label>
+                        <input type="text" id="inputStreak" placeholder="W1" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="Submit-Btn">Add to List</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div class="Drawer" id="commentDrawer">
@@ -661,7 +706,8 @@ function updateCellIndicator() {
 }
 
 function closeDrawer() {
-  document.getElementById('commentDrawer').classList.remove('open');
+  const drawer = document.getElementById('commentDrawer')
+  drawer.classList.remove('open');
   currentCellId = null;
 }
 
@@ -692,8 +738,10 @@ async function openDrawer(cell) {
   </a>
   `;
     
+  const drawer = document.getElementById('commentDrawer');
+  drawer.style.display = 'flex';
   setTimeout(() => {
-    document.getElementById('commentDrawer').classList.add('open');
+    drawer.classList.add('open');
   }, 300); // TODO: shouldn't need this hardcoded timeout; add an await above for rednder comments 
 }
 
@@ -989,6 +1037,76 @@ function formatMentions(text) {
     return `<span class="Mention-Badge">@${displayName}</span>`;
   });
 }
+
+/* LIST VIEW */
+
+        // Modal Logic
+        const modal = document.getElementById('addTeamModal');
+
+        function openAddModal() {
+            modal.classList.add('open');
+            setTimeout(() => document.getElementById('inputName').focus(), 100);
+        }
+
+        function closeAddModal(e) {
+            // If e is passed (click event), only close if clicking overlay background
+            if (e && e.target !== modal) return;
+            modal.classList.remove('open');
+            
+            // Clear inputs after transition
+            setTimeout(() => {
+                document.getElementById('inputName').value = '';
+                document.getElementById('inputRecord').value = '';
+                document.getElementById('inputStreak').value = '';
+            }, 300);
+        }
+
+        // Add Team Logic
+        function handleNewTeam(event) {
+            event.preventDefault();
+            alert('Coming soon!');
+            return;
+            
+            const name = document.getElementById('inputName').value;
+            const record = document.getElementById('inputRecord').value;
+            const streak = document.getElementById('inputStreak').value.toUpperCase();
+
+            // Determine Streak Color
+            let streakClass = "";
+            if (streak.startsWith('W')) streakClass = "is-win";
+            if (streak.startsWith('L')) streakClass = "is-loss";
+
+            const list = document.getElementById('rankingList');
+            const rank = list.children.length + 1;
+
+            // HTML for new row
+            const newRow = document.createElement('div');
+            newRow.className = 'Ranking-Row';
+            newRow.innerHTML = `
+                <div class="Row__Rank">${rank}</div>
+                <div class="Row__Team">
+                    <div class="Team__Name">${name}</div>
+                </div>
+                <div class="Row__Stats">
+                    <div class="Stat-Group">
+                        <span class="Stat__Value">${record}</span>
+                        <span class="Stat__Label">Rec</span>
+                    </div>
+                    <div class="Stat-Group">
+                        <span class="Stat__Value ${streakClass}">${streak}</span>
+                        <span class="Stat__Label">Strk</span>
+                    </div>
+                </div>
+            `;
+
+            list.appendChild(newRow);
+            
+            // Scroll to new item
+            newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Close modal
+            closeAddModal();
+        }
 
 /* LOGIN */
 
