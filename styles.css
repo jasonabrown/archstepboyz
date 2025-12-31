@@ -384,7 +384,7 @@ opacity: 0.9;
 
   position: sticky;
   left: 0;
-  width: 100%;
+  width: max-content;
   height: fit-content;
   
   z-index: 1500;
@@ -473,7 +473,7 @@ opacity: 0.9;
   
   width: 90%;
   max-width: 400px;
-  height: 420px;
+  height: 450px;
   border-radius: 20px;
   background: white;
   position: relative;
