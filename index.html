@@ -328,6 +328,7 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
 
 
     </div>
+</div>
 
     <div class="Fab-Wrapper">
         <button class="Fab-Button" onclick="openAddModal()">
@@ -365,7 +366,6 @@ Rules: These teams and/or players cannot, under any circumstances, be a part of 
             </form>
         </div>
     </div>
-</div>
 
 <div class="Drawer" id="commentDrawer">
 <div class="Drawer__Header">
@@ -568,6 +568,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     const list = document.querySelector('.list-container');
     list.style.display = 'none';
+    const fab = document.querySelector('.Fab-Wrapper');
+    fab.style.display = 'none';
     const table = document.querySelector('.table-container');
     table.style.display = 'flex';
   }
@@ -580,6 +582,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     table.style.display = 'none';
     const list = document.querySelector('.list-container');
     list.style.display = 'flex';
+    const fab = document.querySelector('.Fab-Wrapper');
+    fab.style.display = 'flex';
   }
   
   gridBtn.addEventListener('click', switchToGrid);
