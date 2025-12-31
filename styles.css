@@ -63,6 +63,7 @@ overflow-x: auto;
 .Header__Wrapper {
   position: relative;
   min-width: 100%;
+  max-width: 600px;
   width: fit-content; 
 
   display: flex;
@@ -76,6 +77,7 @@ overflow-x: auto;
 
 .Header {
 display: flex;
+flex-direction: column;
 flex-wrap: wrap;
 flex-shrink: 0;
 
@@ -100,7 +102,6 @@ height: 90px;
 border-radius: 50%;
 border: 5px solid #ffffff;
 box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-display:none; /* NOW */
 
 /* object-fit: cover; */
 }
@@ -692,9 +693,9 @@ animation: fadeInDown 0.8s ease-out;
   min-width: 400px;
   /* max-width: 600px; */
   /* max-width: 450px; iPhone Max width sweet spot */
-  width: 100vw;
+  width: fit-content;
   /* width: 200%; */
-  /* margin: 0 auto; */
+  margin: 0 auto;
   /* padding: 0 20px; */
 
   overflow-x: auto;
@@ -828,12 +829,13 @@ li {
 
     /* NEW */
     .Ranking-Container {
-        width: 100vw;
+        width: fit-content;
         min-width: 400px;
         max-width: 600px; /* iPhone Max width sweet spot */
         padding: 20px 20px 20px 20px; /* 50px bottom if floating fixed fab-button */
         box-sizing: border-box;
         animation: fadeInDown 0.8s ease-out;
+        margin: 0 auto;
     }
 
     .Ranking-Row {
@@ -1005,6 +1007,7 @@ li {
         z-index: 100;
         pointer-events: none; /* Let clicks pass through area around button */
         padding-bottom: env(safe-area-inset-bottom);
+        max-width: 600px;
     }
 
     .Fab-Button {
