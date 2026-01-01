@@ -473,7 +473,8 @@ opacity: 0.9;
   
   width: 90%;
   max-width: 400px;
-  height: 450px;
+  height: 90%;
+  max-height: 450px;
   border-radius: 20px;
   background: white;
   position: relative;
