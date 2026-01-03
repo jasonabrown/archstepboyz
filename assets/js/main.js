@@ -110,6 +110,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     table.style.display = "flex";
     const picks = document.querySelector(".Picks-Container");
     picks.style.display = "none";
+    const picksToggle = document.querySelector(".Toggle-Container");
+    picksToggle.style.display = "none";
   }
 
   function switchToList() {
@@ -127,6 +129,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     save.style.display = "none";
     const picks = document.querySelector(".Picks-Container");
     picks.style.display = "none";
+    const picksToggle = document.querySelector(".Toggle-Container");
+    picksToggle.style.display = "none";
   }
 
   function switchToPicks() {
@@ -144,6 +148,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     //save.style.display = "flex";
     const picks = document.querySelector(".Picks-Container");
     picks.style.display = "flex";
+    const picksToggle = document.querySelector(".Toggle-Container");
+    picksToggle.style.display = "flex";
   }
 
   gridBtn.addEventListener("click", switchToGrid);

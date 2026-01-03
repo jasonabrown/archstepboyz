@@ -1611,7 +1611,7 @@ max-height: 100px;
 }
 
 .Toggle-Container {
-        display: flex; align-items: center; gap: 8px; font-family: 'Oswald', sans-serif;
+        display: none; align-items: center; gap: 8px; font-family: 'Oswald', sans-serif;
         font-size: 12px; text-transform: uppercase; color: #636e72; font-weight: 600;
     }
 
