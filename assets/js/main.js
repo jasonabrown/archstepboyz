@@ -1180,7 +1180,7 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
             { id: 'FE', color: '#6c5ce7' }, // Purple (YOU)
             { id: 'GA', color: '#00cec9' }, // Teal
             { id: 'NO', color: '#fab1a0' }, // Peach
-            { id: 'TR', color: '#fdcb6e' }, // Yellow
+            { id: 'BI', color: '#fdcb6e' }, // Yellow
             { id: 'BL', color: '#ff7675' },  // Red
             { id: 'a6a59bf1-97d5-4a9b-b1df-f4439bc9c4e9', color: '#ff7675' },
             { id: '?', color: '#ff7675' },  // Red
@@ -1243,11 +1243,11 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
 
         function renderCardHTML(game) {
             // Check Consensus (5 pickers total)
-            const isAwayConsensus = game.awayPicks?.length === 5;
-            const isHomeConsensus = game.homePicks?.length === 5;
+            const isAwayConsensus = game.away_picks?.length === 5;
+            const isHomeConsensus = game.home_picks?.length === 5;
 
-            const awayClass = isAwayConsensus ? 'is-consensus' : '';
-            const homeClass = isHomeConsensus ? 'is-consensus' : '';
+            const awayClass = isAwayConsensus && showingAllPicks ? 'is-consensus' : '';
+            const homeClass = isHomeConsensus && showingAllPicks ? 'is-consensus' : '';
 
             const awayLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.away_id}.png&h=200&w=200`;
             const homeLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.home_id}.png&h=200&w=200`;
