@@ -650,9 +650,25 @@
       </div>
     </div>
   </div>
+  <div class="Unauthed-Picks" style="display:none;">
   <div class="Picks-Container">
+
+  <div id="gatekeeper" class="Gatekeeper">
+        <div class="Gatekeeper__Content">
+            <div class="Lock-Wrapper locked" id="lockIcon">
+                <i class="fa-solid fa-lock" id="iconSymbol"></i>
+            </div>
+            <h2 class="GK__Title">Members Only</h2>
+            <p class="GK__Desc">This content is reserved for squad members.</p>
+            <button class="GK__Button" onclick="simulateLogin()">Unlock Access</button>
+        </div>
+    </div>
     <div class="Matchup-Column" id="col-1"></div>
     <div class="Matchup-Column" id="col-2"></div>
   </div>
+  </div>
+  <button class="Fab-Save" onclick="alert('Picks Saved!')">
+        <i class="fa-solid fa-floppy-disk"></i> Save Picks
+    </button>
 </body>
 </html>

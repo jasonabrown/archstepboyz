@@ -14,6 +14,7 @@ const db_client = supabase.createClient(DB_URL, ANON_API_KEY);
 let CACHED_COMMENTS_DB = [];
 let AUTHED_USER = null;
 let currentCellId = null;
+let queryString;
 
 /* HELPER METHODS */
 
@@ -102,6 +103,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     list.style.display = "none";
     const fab = document.querySelector(".Fab-Wrapper");
     fab.style.display = "none";
+    const save = document.querySelector(".Fab-Save");
+    save.style.display = "none";
     const table = document.querySelector(".table-container");
     table.style.display = "flex";
     const picks = document.querySelector(".Picks-Container");
@@ -119,6 +122,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     list.style.display = "flex";
     const fab = document.querySelector(".Fab-Wrapper");
     fab.style.display = "flex";
+    const save = document.querySelector(".Fab-Save");
+    save.style.display = "none";
     const picks = document.querySelector(".Picks-Container");
     picks.style.display = "none";
   }
@@ -134,6 +139,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     list.style.display = "none";
     const fab = document.querySelector(".Fab-Wrapper");
     fab.style.display = "none";
+    const save = document.querySelector(".Fab-Save");
+    //save.style.display = "flex";
     const picks = document.querySelector(".Picks-Container");
     picks.style.display = "flex";
   }
@@ -142,7 +149,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
   listBtn.addEventListener("click", switchToList);
   picksBtn.addEventListener("click", switchToPicks);
 
-  const queryString = window.location.search;
+  queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const view = urlParams.get("view");
   const chat = urlParams.get("chat");
@@ -494,9 +501,10 @@ async function submitReply(parentId) {
 let MOCK_USERS = [];
 const MOCK_USERS2 = db_client
   .from("Profiles")
-  .select("username, email")
+  .select("username, email, id")
   .then((res) => {
     MOCK_USERS = res.data;
+    renderAll();
   });
 
 const inputField = document.getElementById("commentInput");
@@ -830,6 +838,7 @@ function authedUserDisplay() {
   document.getElementById("loginBtn").style.display = "none";
   document.getElementById("userMenu").style.display = "block";
   document.getElementById("userDisplay").innerText = AUTHED_USER.username;
+  document.querySelector('.Unauthed-Picks').style.display = "flex";
 
   // TODO: only if admin
   if (AUTHED_USER.username === "fearthebeak") {
@@ -1116,161 +1125,159 @@ async function forgotPassword() {
 }
 forgotPassword();
 
-// --- 1. SETUP ---
-        
-        const CURRENT_USER_ID = 'JD';
+async function pushValueToArray(targetRowId, newValue) {
+  const { data, error } = await supabase.rpc('append_value_to_array', {
+    row_id: targetRowId, // Matches the function argument name
+    value_to_add: newValue // Matches the function argument name
+  })
+
+  if (error) {
+    console.error('Error appending value:', error)
+  } else {
+    console.log('Value appended successfully')
+  }
+}
+
+async function addValueToArray(columnName, valueToAdd, rowId) {
+  const { data, error } = await db_client.rpc('add_pick_value', {
+    row_id: rowId,
+    target_column: columnName,
+    val_to_add: valueToAdd
+  });
+
+  if (error) {
+    console.error('Error adding value:', error.message);
+  } else {
+    console.log('Value added successfully');
+  }
+}
+
+async function removeValueFromArray(columnName, valueToRemove, rowId) {
+  // We call the custom SQL function we just created
+  const { data, error } = await db_client.rpc('remove_pick_value', {
+    row_id: rowId,
+    target_column: columnName,
+    val_to_remove: valueToRemove
+  });
+
+  if (error) {
+    console.error('Error removing value:', error.message);
+  } else {
+    console.log('Value removed successfully');
+  }
+}
+
+// --- 1. SETUP --- 
 
         const PICKERS = [
-            { id: 'JD', color: '#6c5ce7' }, // Purple (YOU)
-            { id: 'AS', color: '#00cec9' }, // Teal
-            { id: 'MK', color: '#fab1a0' }, // Peach
+            { id: 'FE', color: '#6c5ce7' }, // Purple (YOU)
+            { id: 'GA', color: '#00cec9' }, // Teal
+            { id: 'NO', color: '#fab1a0' }, // Peach
             { id: 'TR', color: '#fdcb6e' }, // Yellow
-            { id: 'BL', color: '#ff7675' }  // Red
+            { id: 'BL', color: '#ff7675' },  // Red
+            { id: 'a6a59bf1-97d5-4a9b-b1df-f4439bc9c4e9', color: '#ff7675' },
+            { id: '?', color: '#ff7675' }  // Red
         ];
 
-        // Map team names to real URLs for demo purposes
-        const LOGO_MAP = {
-            'BOS Celtics': 'https://upload.wikimedia.org/wikipedia/en/8/8f/Boston_Celtics.svg',
-            'NY Knicks': 'https://upload.wikimedia.org/wikipedia/en/2/25/New_York_Knicks_logo.svg',
-            'SF 49ers': 'https://upload.wikimedia.org/wikipedia/commons/3/3a/San_Francisco_49ers_logo.svg',
-            'GB Packers': 'https://upload.wikimedia.org/wikipedia/commons/5/50/Green_Bay_Packers_logo.svg',
-            'LAL Lakers': 'https://upload.wikimedia.org/wikipedia/commons/3/3c/Los_Angeles_Lakers_logo.svg',
-            'GS Warriors': 'https://upload.wikimedia.org/wikipedia/en/0/01/Golden_State_Warriors_logo.svg',
-            'EDM Oilers': 'https://upload.wikimedia.org/wikipedia/en/4/4d/Logo_Edmonton_Oilers.svg',
-            'VAN Canucks': 'https://upload.wikimedia.org/wikipedia/en/3/3a/Vancouver_Canucks_logo.svg',
-            'PHI Phillies': 'https://upload.wikimedia.org/wikipedia/en/f/f0/Philadelphia_Phillies_2019_logo.svg',
-            'ATL Braves': 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atlanta_Braves.svg',
-            'MIA Heat': 'https://upload.wikimedia.org/wikipedia/en/f/fb/Miami_Heat_logo.svg',
-            'ORL Magic': 'https://upload.wikimedia.org/wikipedia/en/1/10/Orlando_Magic_logo.svg'
-        };
-
-        const GAMES = [
-            { id: 0, away: 'Virginia', awayId: '258', awayRec: '11-2 (0-1)', home: 'NC State', homeId: '152', homeRec: '10-4 (1-0)', league: 'NCAAM', time: '11:00 AM' },
-            { id: 1, away: 'Kentucky', awayId: '96', awayRec: '9-4 (0-0)', home: 'Alabama', homeId: '333', homeRec: '10-3 (0-0)', league: 'NCAAM', time: '12:00 PM' },
-            { id: 2, away: 'VCU', awayId: '2670', awayRec: '10-4 (1-0)', home: 'Duquesne', homeId: '2184', homeRec: '9-5 (1-0)', league: 'NCAAM', time: '12:00 PM' },
-            { id: 3, away: 'UTSA', awayId: '2636', awayRec: '4-9 (0-1)', home: 'Temple', homeId: '218', homeRec: '9-5 (1-0)', league: 'NCAAM', time: '12:00 PM' },
-            { id: 4, away: 'Villanova', awayId: '222', awayRec: '11-2 (2-0)', home: 'Butler', homeId: '2086', homeRec: '7-6 (0-2)', league: 'NCAAM', time: '12:00 PM' },
-            { id: 5, away: 'Providence', awayId: '2507', awayRec: '7-6 (0-2)', home: "St. John's", homeId: '2599', homeRec: '9-4 (2-0)', league: 'NCAAM', time: '12:00 PM' }
-        ];
-
-        // --- 2. STATE MANAGEMENT ---
-        
-        // This object stores who picked who for each game
-        // Structure: { 0: { away: ['JD', 'AS'], home: ['MK', 'TR', 'BL'] }, ... }
-        let gameState = {};
-
-        function initGame() {
-            GAMES.forEach(game => {
-                gameState[game.id] = { away: [], home: [] };
-                
-                // Randomly assign pickers for initial state
-                PICKERS.forEach(picker => {
-                    const side = Math.random() > 0.5 ? 'away' : 'home';
-                    gameState[game.id][side].push(picker.id);
-                    gameState[game.id][side].sort();
-                });
-            });
-            renderAll();
-        }
-
-        // --- 3. INTERACTION ---
+        var GAMES = [];
 
         function switchPick(gameId, targetSide) {
-            const gamePicks = gameState[gameId];
-            const currentSide = gamePicks.away.includes(CURRENT_USER_ID) ? 'away' : 'home';
-
-            // If user clicked the side they are already on, do nothing
-            if (currentSide === targetSide) return;
+            const gamePicks = GAMES.find( game => game.id ===  gameId );
+            const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase(); // .sub
+            const currentSide = gamePicks.away_picks?.includes(userId) ? 'away_picks' : (gamePicks.home_picks?.includes(userId) ? 'home_picks' : null);
 
             // Remove from current side
-            gamePicks[currentSide] = gamePicks[currentSide].filter(id => id !== CURRENT_USER_ID);
+            if (currentSide) {
+              gamePicks[currentSide] = gamePicks[currentSide]?.filter(id => id !== userId);
+              removeValueFromArray(currentSide, AUTHED_USER?.sub, gameId);
+            }
             
-            // Add to new side
-            gamePicks[targetSide].push(CURRENT_USER_ID);
-            gamePicks[targetSide].sort();
+            // If user clicked the side they are already on, do nothing
+            if (currentSide !== targetSide) {
+              // Add to new side
+              if (gamePicks[targetSide] == null) {
+                gamePicks[targetSide] = [];
+              }
+              gamePicks[targetSide].push(userId);
+              addValueToArray(targetSide, AUTHED_USER?.sub, gameId);
+              gamePicks[targetSide].sort();
+            }
 
             // Re-render only this card
             renderCardToDOM(gameId);
         }
-
-        // --- 4. RENDERING ---
 
         function getPickerObj(id) {
             return PICKERS.find(p => p.id === id);
         }
 
         function createAvatarHTML(pickerIds) {
+            const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase(); // .sub
+            if (pickerIds == null) return '';
             return pickerIds.map(id => {
                 const p = getPickerObj(id);
+                
                 // Add special class if it's the current user for animation
-                const extraClass = (id === CURRENT_USER_ID) ? 'just-added' : '';
-                // CHECK: Is this JD? If so, add 'current-user' class
-                const userClass = (id === CURRENT_USER_ID) ? 'current-user' : '';
+                const extraClass = (id === userId) ? 'just-added' : '';
+                const userClass = (id === userId) ? 'current-user' : '';
+                
                 return `<div class="Avatar ${userClass} ${extraClass}" style="background-color: ${p.color};">${p.id}</div>`;
             }).join('');
         }
 
         function renderCardHTML(game) {
-            const picks = gameState[game.id];
-            
             // Check Consensus (5 pickers total)
-            const isAwayConsensus = picks.away.length === 5;
-            const isHomeConsensus = picks.home.length === 5;
+            const isAwayConsensus = game.awayPicks?.length === 5;
+            const isHomeConsensus = game.homePicks?.length === 5;
 
             const awayClass = isAwayConsensus ? 'is-consensus' : '';
             const homeClass = isHomeConsensus ? 'is-consensus' : '';
 
-            const awayLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.awayId}.png&h=200&w=200`;
-            /*
-          <span class="pr4 TeamLink__Logo">
-            <!-- <a class="AnchorLink" tabindex="0" href="https://www.espn.com/mens-college-basketball/team/stats/_/id/${team.id}" target="_blank" rel="noopener noreferrer"> -->
-            <img 
-              alt="${team.name}" 
-              class="Image Logo Logo__sm" 
-              title="${team.name}" 
-              data-mptype="image" 
-              src=""
-            >
-            <!-- </a> --->
-          </span>
-            */
-            const homeLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.homeId}.png&h=200&w=200`;
+            const awayLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.away_id}.png&h=200&w=200`;
+            const homeLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.home_id}.png&h=200&w=200`;
 
             return `
             <div class="Game-Slip" id="game-${game.id}">
                 <div class="Slip__Meta">
                     <span><i class="fa-solid fa-basketball"></i> ${game.league}</span>
-                    <span>${game.time}</span>
+<span>${new Date(game.time).toLocaleString(navigator.language, { 
+  year: "numeric", 
+  month: "short", 
+  day: "numeric", 
+  hour: "numeric", 
+  minute: "2-digit", 
+  timeZoneName: "short" 
+})}</span>
                 </div>
 
-                <div class="Team-Section ${awayClass}" onclick="switchPick(${game.id}, 'away')">
+                <div class="Team-Section ${awayClass}" onclick="switchPick(${game.id}, 'away_picks')">
                     <div class="Team__Header">
                         <img src="${awayLog}" class="Team__Logo" alt="${game.away}">
                         <div class="Team__Text">
                             <span class="Team__Name">${game.away}</span>
-                            <span class="Team__Record">${game.awayRec}</span>
+                            <span class="Team__Record">${game.away_record}</span>
                         </div>
                     </div>
                     <div class="Picker-Row">
-                        ${createAvatarHTML(picks.away)}
+                        ${createAvatarHTML(game.away_picks)}
                     </div>
                     <div class="Consensus-Badge"> <i class="fa-solid fa-check"></i></div>
                 </div>
 
                 <div class="Slip__Divider"><span>VS</span></div>
 
-                <div class="Team-Section ${homeClass}" onclick="switchPick(${game.id}, 'home')">
+                <div class="Team-Section ${homeClass}" onclick="switchPick(${game.id}, 'home_picks')">
                     <div class="Team__Header">
                         <img src="${homeLog}" class="Team__Logo" alt="${game.home}">
                          <div class="Team__Text">
                             <span class="Team__Name">${game.home}</span>
-                            <span class="Team__Record">${game.homeRec}</span>
+                            <span class="Team__Record">${game.home_record}</span>
                         </div>
                     </div>
                     <div class="Picker-Row">
-                        ${createAvatarHTML(picks.home)}
+                        ${createAvatarHTML(game.home_picks)}
                     </div>
-                    <div class="Consensus-Badge">Consensus</div>
+                    <div class="Consensus-Badge"> <i class="fa-solid fa-check"></i></div>
                 </div>
             </div>
             `;
@@ -1291,14 +1298,21 @@ forgotPassword();
             }
         }
 
-        function renderAll() {
+        async function renderAll() {
             const col1 = document.getElementById('col-1');
             const col2 = document.getElementById('col-2');
             
             col1.innerHTML = '';
             col2.innerHTML = '';
 
+            if (GAMES.length === 0) {
+              const g = await db_client.from("Picks").select("*").order('time').order('id');
+              GAMES = g.data;
+            }
+
             GAMES.forEach((game, index) => {
+                game['home_picks'] = game['home_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
+                game['away_picks'] = game['away_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
                 const cardHTML = renderCardHTML(game);
                 if (index % 2 === 0) {
                     col1.insertAdjacentHTML('beforeend', cardHTML);
@@ -1308,5 +1322,24 @@ forgotPassword();
             });
         }
 
-        // Run
-        initGame();
+
+// AUTH LOGIC
+const isUserLoggedIn = false;
+        if (!isUserLoggedIn) {
+            document.getElementById('gatekeeper').classList.add('active');
+            const cont = document.querySelector('.Picks-Container');
+            cont.classList.add('is-locked');
+        }
+        function simulateLogin() {
+            const btn = document.querySelector('.GK__Button');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+            setTimeout(() => {
+                document.getElementById('lockIcon').classList.replace('locked','unlocked');
+                document.getElementById('iconSymbol').classList.replace('fa-lock','fa-lock-open');
+                btn.style.background = '#00b894'; btn.innerText = "Welcome!";
+                setTimeout(() => {
+                    document.getElementById('gatekeeper').style.transform = 'translateY(-100%)';
+                    document.body.classList.remove('is-locked');
+                }, 800);
+            }, 1000);
+        }
