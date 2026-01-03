@@ -1183,7 +1183,8 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
             { id: 'TR', color: '#fdcb6e' }, // Yellow
             { id: 'BL', color: '#ff7675' },  // Red
             { id: 'a6a59bf1-97d5-4a9b-b1df-f4439bc9c4e9', color: '#ff7675' },
-            { id: '?', color: '#ff7675' }  // Red
+            { id: '?', color: '#ff7675' },  // Red
+            { id: 'CO', color: '#BA0C2F' },  // Red
         ];
 
         var GAMES = [];
