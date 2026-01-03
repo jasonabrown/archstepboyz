@@ -1195,6 +1195,7 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
         }
 
         function switchPick(gameId, targetSide) {
+            return // TODO: disabled
             const gamePicks = GAMES.find( game => game.id ===  gameId );
             const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase(); // .sub
             const currentSide = gamePicks.away_picks?.includes(userId) ? 'away_picks' : (gamePicks.home_picks?.includes(userId) ? 'home_picks' : null);
