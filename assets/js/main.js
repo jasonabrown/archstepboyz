@@ -15,6 +15,16 @@ let CACHED_COMMENTS_DB = [];
 let AUTHED_USER = null;
 let currentCellId = null;
 let queryString;
+
+var GAMES = [];
+const PICKERS = [
+  { id: 'FE', color: '#6c5ce7' }, // Purple
+  { id: 'GA', color: '#00cec9' }, // Teal
+  { id: 'NO', color: '#fab1a0' }, // Peach
+  { id: 'BI', color: '#fdcb6e' }, // Yellow
+  { id: 'BL', color: '#ff7675' },  // Red
+  { id: 'CO', color: '#BA0C2F' },  // Red
+];
 let showingAllPicks = false;
 
 /* HELPER METHODS */
@@ -1132,19 +1142,9 @@ async function forgotPassword() {
 }
 forgotPassword();
 
-async function pushValueToArray(targetRowId, newValue) {
-  const { data, error } = await supabase.rpc('append_value_to_array', {
-    row_id: targetRowId, // Matches the function argument name
-    value_to_add: newValue // Matches the function argument name
-  })
+/* PICKS */
 
-  if (error) {
-    console.error('Error appending value:', error)
-  } else {
-    console.log('Value appended successfully')
-  }
-}
-
+/* DB CALLS */
 async function addValueToArray(columnName, valueToAdd, rowId) {
   const { data, error } = await db_client.rpc('add_pick_value', {
     row_id: rowId,
@@ -1160,7 +1160,6 @@ async function addValueToArray(columnName, valueToAdd, rowId) {
 }
 
 async function removeValueFromArray(columnName, valueToRemove, rowId) {
-  // We call the custom SQL function we just created
   const { data, error } = await db_client.rpc('remove_pick_value', {
     row_id: rowId,
     target_column: columnName,
@@ -1174,66 +1173,55 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
   }
 }
 
-// --- 1. SETUP --- 
+async function fetchPicks() {
+  return db_client.from("Picks").select("*").order('time').order('id');
+}
 
-        const PICKERS = [
-            { id: 'FE', color: '#6c5ce7' }, // Purple (YOU)
-            { id: 'GA', color: '#00cec9' }, // Teal
-            { id: 'NO', color: '#fab1a0' }, // Peach
-            { id: 'BI', color: '#fdcb6e' }, // Yellow
-            { id: 'BL', color: '#ff7675' },  // Red
-            { id: 'a6a59bf1-97d5-4a9b-b1df-f4439bc9c4e9', color: '#ff7675' },
-            { id: '?', color: '#ff7675' },  // Red
-            { id: 'CO', color: '#BA0C2F' },  // Red
-        ];
+// TODO: make this more scalable for many users
+function getPickerObj(id) {
+  return PICKERS.find(p => p.id === id) ?? { id: '?', color: '#ff7675' };
+}
 
-        var GAMES = [];
+function toggleView() {
+  showingAllPicks = document.getElementById('viewToggle').checked;
+  renderAll();
+}
 
-        function toggleView() {
-            showingAllPicks = document.getElementById('viewToggle').checked;
-            renderAll();
-        }
+function switchPick(gameId, targetSide) {
+    return // TODO: disabled
+    const gamePicks = GAMES.find( game => game.id ===  gameId );
+    const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase();
+    const currentSide = gamePicks.away_picks?.includes(userId) ? 'away_picks' : (gamePicks.home_picks?.includes(userId) ? 'home_picks' : null);
 
-        function switchPick(gameId, targetSide) {
-            return // TODO: disabled
-            const gamePicks = GAMES.find( game => game.id ===  gameId );
-            const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase(); // .sub
-            const currentSide = gamePicks.away_picks?.includes(userId) ? 'away_picks' : (gamePicks.home_picks?.includes(userId) ? 'home_picks' : null);
+    // Remove from current side
+    if (currentSide) {
+      gamePicks[currentSide] = gamePicks[currentSide]?.filter(id => id !== userId);
+      removeValueFromArray(currentSide, AUTHED_USER?.sub, gameId);
+    }
+    
+    // If user clicked the side they are already on, do nothing
+    if (currentSide !== targetSide) {
+      if (gamePicks[targetSide] == null) {
+        gamePicks[targetSide] = [];
+      }
+      gamePicks[targetSide].push(userId);
+      addValueToArray(targetSide, AUTHED_USER?.sub, gameId);
+    }
 
-            // Remove from current side
-            if (currentSide) {
-              gamePicks[currentSide] = gamePicks[currentSide]?.filter(id => id !== userId);
-              removeValueFromArray(currentSide, AUTHED_USER?.sub, gameId);
-            }
-            
-            // If user clicked the side they are already on, do nothing
-            if (currentSide !== targetSide) {
-              // Add to new side
-              if (gamePicks[targetSide] == null) {
-                gamePicks[targetSide] = [];
-              }
-              gamePicks[targetSide].push(userId);
-              addValueToArray(targetSide, AUTHED_USER?.sub, gameId);
-              gamePicks[targetSide].sort();
-            }
-
-            // Re-render only this card
-            renderCardToDOM(gameId);
-        }
-
-        function getPickerObj(id) {
-            return PICKERS.find(p => p.id === id) ?? { id: 'CO', color: '#ff7675' };
-        }
+    // Re-render only this card
+    renderCardToDOM(gameId);
+}
 
         function createAvatarHTML(pickerIds) {
-            const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase(); // .sub
             if (pickerIds == null) return '';
+            
+            const userId = AUTHED_USER?.username?.slice(0,2).toUpperCase();
             let visibleIds = pickerIds;
             if (!showingAllPicks) visibleIds = pickerIds.filter(id => id === userId);
+            
             return visibleIds.map(id => {
                 const p = getPickerObj(id);
                 
-                // Add special class if it's the current user for animation
                 const extraClass = (id === userId) ? 'just-added' : '';
                 const userClass = (id === userId) ? 'current-user' : '';
                 
@@ -1246,8 +1234,23 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
             const isAwayConsensus = game.away_picks?.length === 5;
             const isHomeConsensus = game.home_picks?.length === 5;
 
-            const awayClass = isAwayConsensus && showingAllPicks ? 'is-consensus' : '';
-            const homeClass = isHomeConsensus && showingAllPicks ? 'is-consensus' : '';
+            let awayClasses = [];
+            let homeClasses = [];
+
+            if (!showingAllPicks) {
+                awayClasses.push(game.winner === 'away' ? 'is-winner' : ''); 
+                homeClasses.push(game.winner === 'home' ? ' is-winner' : '');
+            } else {
+              if (isAwayConsensus) awayClasses.push('is-consensus');
+              if (isHomeConsensus) homeClasses.push('is-consensus');
+
+              if (game.winner) {
+                awayClasses.push(game.winner === 'away' ? ' is-winner' : ' is-loser');
+                homeClasses.push(game.winner === 'home' ? ' is-winner' : ' is-loser');
+              }
+            }
+            const awayClass = awayClasses.join(' ');
+            const homeClass = homeClasses.join(' ');
 
             const awayLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.away_id}.png&h=200&w=200`;
             const homeLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.home_id}.png&h=200&w=200`;
@@ -1275,7 +1278,7 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
                         </div>
                     </div>
                     <div class="Picker-Row">
-                        ${createAvatarHTML(game.away_picks)}
+                        ${createAvatarHTML(game.away_picks?.sort())}
                     </div>
                     <div class="Consensus-Badge"> <i class="fa-solid fa-check"></i></div>
                 </div>
@@ -1291,7 +1294,7 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
                         </div>
                     </div>
                     <div class="Picker-Row">
-                        ${createAvatarHTML(game.home_picks)}
+                        ${createAvatarHTML(game.home_picks?.sort())}
                     </div>
                     <div class="Consensus-Badge"> <i class="fa-solid fa-check"></i></div>
                 </div>
@@ -1302,11 +1305,6 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
         function renderCardToDOM(gameId) {
             const game = GAMES.find(g => g.id === gameId);
             const cardHTML = renderCardHTML(game);
-            
-            // Find the existing element and replace it specifically to maintain scroll position
-            // But since we are replacing the whole HTML, animation classes trigger again.
-            // We need to find the specific container. 
-            // For simplicity in this structure, we replace the outerHTML of the Game-Slip
             
             const existingEl = document.getElementById(`game-${gameId}`);
             if (existingEl) {
@@ -1322,13 +1320,16 @@ async function removeValueFromArray(columnName, valueToRemove, rowId) {
             col2.innerHTML = '';
 
             if (GAMES.length === 0) {
-              const g = await db_client.from("Picks").select("*").order('time').order('id');
+              const g = await fetchPicks();
               GAMES = g.data;
               GAMES.forEach((game, index) => {
                 game['home_picks'] = game['home_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
                 game['away_picks'] = game['away_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
               });
             }
+
+            // TODO: remove; only showing games I picked for fun
+            GAMES = GAMES.filter(game => game.away_picks?.includes('FE') || game.home_picks?.includes('FE'));
 
             GAMES.forEach((game, index) => {
                 const cardHTML = renderCardHTML(game);

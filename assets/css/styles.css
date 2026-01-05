@@ -474,7 +474,7 @@ opacity: 0.9;
   padding: 0 !important; 
   
   /* Clips the content that is sliding out/blurred */
-  overflow: hidden; 
+  overflow: scroll; 
   
   width: 90%;
   max-width: 400px;
@@ -1832,6 +1832,87 @@ max-height: 100px;
         opacity: 1;
         transform: translateY(0);
     }
+
+.Team-Section.is-winner {
+    /* Gold Border to signify victory */
+    border: 2px solid #fdcb6e; 
+    /* Gold Inner Glow */
+    box-shadow: inset 0 0 15px rgba(253, 203, 110, 0.2); 
+    z-index: 5;
+}
+
+/* 2. WINNER + CONSENSUS (The "Jackpot" - Complements Green) */
+.Team-Section.is-winner.is-consensus {
+    /* The Green BG stays, but we pump up the border and glow */
+    border: 2px solid #ffd32a; 
+    box-shadow: 0 0 15px rgba(255, 211, 42, 0.6); /* External Glow */
+}
+
+/* 3. CONSENSUS + LOSER (The "Bad Beat" - Shows consensus was wrong) */
+.Team-Section.is-loser.is-consensus {
+    /* Keep the green so we know it WAS the pick, but make it look 'dead' */
+    filter: grayscale(0.8); /* Drain the color */
+    opacity: 0.7; /* Fade it out */
+    border: 2px solid #ff7675; /* Red "Failure" Border */
+    
+    /* "Voided Ticket" Diagonal Hatch Pattern */
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05) 10px,
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.1) 20px
+    );
+}
+
+/* --- RESULT BADGES (Icons) --- */
+
+/* WINNER CROWN ICON */
+.Team-Section.is-winner::after {
+    content: '\f521'; /* FontAwesome Crown */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: -4px;
+    right: 8px; /* Position top-left to balance Consensus badge (top-right) */
+    font-size: 16px;
+    color: #fdcb6e;
+    background: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+}
+
+/* CONSENSUS LOSER 'X' ICON */
+.Team-Section.is-loser.is-consensus::after {
+    content: '\f00d'; /* FontAwesome X Mark */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: -4px;
+    right: 8px;
+    font-size: 14px;
+    color: white;
+    background: #ff7675; /* Red bg */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
 
     /* DIVIDER */
     .Slip__Divider {
