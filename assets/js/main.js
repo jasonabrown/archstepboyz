@@ -1307,7 +1307,8 @@ function switchPick(gameId, targetSide) {
 
         function renderCardToDOM(gameId) {
             const game = GAMES.find(g => g.id === gameId);
-            const cardHTML = renderCardHTML(game);
+            const week = document.querySelector('.Week-Select-Input')?.value.split(' ').at(-1) ?? '9';
+            const cardHTML = renderCardHTML(game, week);
             
             const existingEl = document.getElementById(`game-${gameId}`);
             if (existingEl) {
