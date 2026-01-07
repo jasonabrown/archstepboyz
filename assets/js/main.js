@@ -1335,7 +1335,7 @@ function switchPick(gameId, targetSide) {
             
             if (GAMES.length === 0 || forceRefresh) {
               const g = await fetchPicks(week);
-              GAMES = g.data;
+              GAMES = g.data.filter( game => game['quality'] !== '*' ); // TODO: filter out bad games
               GAMES.forEach((game, index) => {
                 game['home_picks'] = game['home_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
                 game['away_picks'] = game['away_picks']?.map(uuid => MOCK_USERS.find(user => user.id === uuid)?.username?.slice(0,2).toUpperCase() ?? '?');
