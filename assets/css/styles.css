@@ -1636,7 +1636,16 @@ max-height: 100px;
         margin: 0 auto;
         padding: 10px 0;
     }
-
+    
+    .Picks-List {
+        display: flex;
+        flex-wrap: wrap; 
+        gap: 10px;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 10px 0;
+    }
+    
     .Matchup-Column {
         flex: 0 0 calc(50% - 5px);
         display: flex;

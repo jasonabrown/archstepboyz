@@ -1,5 +1,7 @@
 /* GLOBAL VARS */
 
+const currentDate = new Date();
+
 const DB_URL = "https://qeuvposbesblckyuflbd.supabase.co";
 const TEAMS_ENDPOINT =
   "https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc";
@@ -1256,8 +1258,18 @@ function switchPick(gameId, targetSide) {
             const awayClass = awayClasses.join(' ');
             const homeClass = homeClasses.join(' ');
 
-            const awayClickFn = week >= CURRENT_WEEK ? `onclick="switchPick(${game.id}, 'away_picks')"` : '';
-            const homeClickFn = week >= CURRENT_WEEK ? `onclick="switchPick(${game.id}, 'home_picks')"` : '';
+            const gameDate = new Date(game.time)
+            const gameTime = gameDate.toLocaleString(navigator.language, {
+              // year: "numeric", 
+              // month: "short", 
+              // day: "numeric", 
+              hour: "numeric", 
+              minute: "2-digit", 
+              timeZoneName: "short" 
+            });
+
+            const awayClickFn = gameDate > currentDate ? `onclick="switchPick(${game.id}, 'away_picks')"` : '';
+            const homeClickFn = gameDate > currentDate ? `onclick="switchPick(${game.id}, 'home_picks')"` : '';
 
             const awayLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.away_id}.png&h=200&w=200`;
             const homeLog = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${game.home_id}.png&h=200&w=200`;
@@ -1266,14 +1278,7 @@ function switchPick(gameId, targetSide) {
             <div class="Game-Slip" id="game-${game.id}">
                 <div class="Slip__Meta">
                     <span><i class="fa-solid fa-basketball"></i> ${game.league}</span>
-<span>${new Date(game.time).toLocaleString(navigator.language, { 
-  year: "numeric", 
-  month: "short", 
-  day: "numeric", 
-  hour: "numeric", 
-  minute: "2-digit", 
-  timeZoneName: "short" 
-})}</span>
+                    <span>${gameTime}</span>
                 </div>
 
                 <div class="Team-Section ${awayClass}" ${awayClickFn}>
@@ -1321,8 +1326,11 @@ function switchPick(gameId, targetSide) {
         }
 
         async function renderAll(forceRefresh = false) {
-            const list = document.querySelector('.Picks-Container');
+            const list = document.getElementById('picks-new');
+            const finalList = document.getElementById('picks-final');
+            console.log(finalList);
             list.innerHTML = '';
+            finalList.innerHTML = '';
             const week = document.querySelector('.Week-Select-Input')?.value.split(' ').at(-1) ?? '9';
             
             if (GAMES.length === 0 || forceRefresh) {
@@ -1339,9 +1347,14 @@ function switchPick(gameId, targetSide) {
 
             let lastDate = '';
             let days = 0;
+            let indexBrk = 0;
             GAMES.forEach((game, index) => {
-              date = new Date(game.time).toLocaleString(navigator.language, { month: "short", day: "numeric", weekday: "long" });
+              const d = new Date(game.time);
+              const date = d.toLocaleString(navigator.language, { month: "short", day: "numeric", weekday: "long" });
+              const notCompleted = currentDate < d || date === currentDate.toLocaleString(navigator.language, { month: "short", day: "numeric", weekday: "long" });
+
               if (date !== lastDate) {
+                indexBrk = index;
                 days += 1;
                 const separatorHTML = `
                 <div class="Date-Separator">
@@ -1350,19 +1363,25 @@ function switchPick(gameId, targetSide) {
                     </div>
                 </div>
                 `;
-                list.insertAdjacentHTML('beforeend', separatorHTML);
                 lastDate = date;
-                list.insertAdjacentHTML('beforeend', `<div class="Matchup-Column" id="${days}-col-1"></div>`);
-                list.insertAdjacentHTML('beforeend', `<div class="Matchup-Column" id="${days}-col-2"></div>`);
+                if (notCompleted) {
+                  list.insertAdjacentHTML('beforeend', separatorHTML);
+                  list.insertAdjacentHTML('beforeend', `<div class="Matchup-Column" id="${days}-col-1"></div>`);
+                  list.insertAdjacentHTML('beforeend', `<div class="Matchup-Column" id="${days}-col-2"></div>`);
+                } else {
+                  finalList.insertAdjacentHTML('afterbegin', `<div class="Matchup-Column" id="${days}-col-2"></div>`);
+                  finalList.insertAdjacentHTML('afterbegin', `<div class="Matchup-Column" id="${days}-col-1"></div>`);
+                  finalList.insertAdjacentHTML('afterbegin', separatorHTML);
+                }
               }
                 const colA = document.getElementById(`${days}-col-1`);
                 const colB = document.getElementById(`${days}-col-2`);
 
                 const cardHTML = renderCardHTML(game, week);
-                if (index % 2 === 0) {
-                    colA.insertAdjacentHTML('beforeend', cardHTML);
+                if ((index - indexBrk) % 2 === 0) {
+                    colA.insertAdjacentHTML(notCompleted ? 'beforeend' : 'afterbegin', cardHTML);
                 } else {
-                    colB.insertAdjacentHTML('beforeend', cardHTML);
+                    colB.insertAdjacentHTML(notCompleted ? 'beforeend' : 'afterbegin', cardHTML);
                 }
             });
         }
