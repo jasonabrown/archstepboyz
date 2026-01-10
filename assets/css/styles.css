@@ -1807,7 +1807,7 @@ max-height: 100px;
         height: 20px;
         border-radius: 50%;
         color: white;
-        font-size: 10px;
+        font-size: 8.5px;
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -2071,6 +2071,86 @@ max-height: 100px;
 
 .Date-Separator__Text i {
     color: #b2bec3; /* Subtle icon color */
+}
+
+/* --- ROSTER LEGEND --- */
+.Legend-Wrapper {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.Legend-Toggle-Btn {
+    background: none;
+    border: none;
+    color: #b2bec3;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+    padding: 8px;
+}
+
+.Legend-Toggle-Btn:hover { color: #2d3436; }
+.Legend-Toggle-Btn i { transition: transform 0.3s ease; }
+.Legend-Toggle-Btn.active i { transform: rotate(180deg); }
+
+.Legend-Drawer {
+    width: 100%;
+    max-width: 500px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+    
+    /* Internal Layout */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); /* Auto columns */
+    gap: 10px;
+    padding: 0 10px; /* Horizontal padding */
+}
+
+.Legend-Drawer.open {
+    max-height: 200px; /* Enough space for rows */
+    opacity: 1;
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Individual User Chip */
+.Legend-User {
+    display: flex;
+    align-items: center; /* Center vertically if text wraps */
+    gap: 10px; /* More space between avatar and name */
+    background: white;
+    padding: 8px 12px 8px 8px; /* More generous padding */
+    border-radius: 12px; /* Slightly boxier radius looks better with text blocks */
+    border: 1px solid #f1f2f6;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    transition: transform 0.2s;
+    height: 100%; /* Ensures they stretch evenly in the grid */
+}
+
+.Legend-User:active { transform: scale(0.95); }
+
+.Legend-Name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #636e72;
+
+    /* UPDATED: Allow Text Wrapping */
+    white-space: normal; 
+    line-height: 1.2;
+    word-break: break-word; /* Prevents long words from overflowing */
 }
 
 

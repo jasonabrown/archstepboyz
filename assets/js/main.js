@@ -28,8 +28,8 @@ const PICKERS = [
   { uuid: '1bca9cd2-5e27-4942-97d7-29c2e0bc70cc', id: 'CB', color: '#0984e3' },  // Blue
   { uuid: '72cee94c-8f10-4005-94df-c21995d44bae', id: 'JO', color: '#00b894' },  // Green
   /* unused */
-  { uuid: '', id: '-', color: '#e17055' },  // Orange
-  { uuid: '', id: '--', color: '#e84393' },  // Pink
+  { uuid: '', id: 'ARCH', username: 'ArchStepBoy', color: '#e17055', icon: 'fa-solid fa-user-astronaut' },  // Orange
+  { uuid: '', id: 'BOOTS', username: 'Boots Radford', color: '#e84393', icon: 'fa-solid fa-shoe-prints' },  // Pink
 ];
 let showingAllPicks = false;
 const CURRENT_WEEK = 10;
@@ -1202,6 +1202,7 @@ function getPickerObj(id) {
 function toggleView() {
   showingAllPicks = document.getElementById('viewToggle').checked;
   renderAll();
+  toggleLegend();
 }
 
 function switchPick(gameId, targetSide) {
@@ -1336,6 +1337,9 @@ function switchPick(gameId, targetSide) {
         }
 
         async function renderAll(forceRefresh = false) {
+            document.querySelector('.Legend-Wrapper').style.display = showingAllPicks ? 'flex' : 'none';
+            renderLegend();
+            
             const list = document.getElementById('picks-new');
             const finalList = document.getElementById('picks-final');
             list.innerHTML = '';
@@ -1395,6 +1399,36 @@ function switchPick(gameId, targetSide) {
             });
         }
 
+// --- LEGEND LOGIC ---
+
+function toggleLegend() {
+    const drawer = document.getElementById('rosterList');
+    const btnIcon = document.querySelector('.Legend-Toggle-Btn i');
+    const btn = document.querySelector('.Legend-Toggle-Btn');
+    
+    drawer.classList.toggle('open');
+    btn.classList.toggle('active');
+}
+
+function renderLegend() {
+    const container = document.getElementById('rosterList');
+    container.innerHTML = PICKERS.map(p => {
+        // Reuse your consistent color logic
+        // We use a simplified Avatar style just for the legend
+        
+        const content = p.icon 
+            ? `<i class="${p.icon}" style="font-size: 11px;"></i>` 
+            : p.id;
+        return `
+            <div class="Legend-User">
+                <div class="Avatar" style="background-color: ${p.color}; width: 20px; height: 20px; font-size: 9px; border:none;">
+                    ${content}
+                </div>
+                <span class="Legend-Name">${MOCK_USERS.find(u => u.id === p.uuid)?.username ?? p.username}</span>
+            </div>
+        `;
+    }).join('');
+}
 
 // AUTH LOGIC
 const isUserLoggedIn = false;
