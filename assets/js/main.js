@@ -5,6 +5,8 @@ const currentDate = new Date();
 const DB_URL = "https://qeuvposbesblckyuflbd.supabase.co";
 const TEAMS_ENDPOINT =
   "https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Teams?order=conf.asc,conf_pos.asc";
+const D1_ENDPOINT =
+  "https://qeuvposbesblckyuflbd.supabase.co/rest/v1/D1?order=name.asc";
 const COMMENTS_ENDPOINT =
   "https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Comments";
 const USERS_ENDPOINT = "https://qeuvposbesblckyuflbd.supabase.co/rest/v1/Users";
@@ -33,6 +35,16 @@ const PICKERS = [
 ];
 let showingAllPicks = false;
 const CURRENT_WEEK = 10;
+
+        // --- STATE MANAGEMENT ---
+        let currentView = 'DRAFT'; // 'DRAFT', 'OFFICIAL', 'MK'
+        let draftBallot = new Array(25).fill(null); // The user's editing space
+        let activeRowIndex = null;
+
+        // Mock Database
+        const MOCK_DB = {
+            'OFFICIAL': ['2','5'],
+        };
 
 /* HELPER METHODS */
 
@@ -79,6 +91,20 @@ async function fetchTeams() {
   return apiReq(TEAMS_ENDPOINT, "GET");
 }
 
+async function fetchD1() {
+  return apiReq(D1_ENDPOINT, "GET");
+}
+
+async function fetchTop25(user_id) {
+  return db_client.from("Top25").select('*').eq("id", user_id);
+}
+
+async function updateTop25(user_id, week, rankings) {
+  const data = { [week]: rankings };
+  console.log('updated db top 25');
+  return db_client.from("Top25").update(data).eq("id", user_id);
+}
+
 async function isUserSignedIn() {
   const data = await db_client.auth.getSession();
   if (data?.session) {
@@ -110,12 +136,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
   const gridBtn = document.getElementById("gridViewBtn");
   const listBtn = document.getElementById("listViewBtn");
   const picksBtn = document.getElementById("picksViewBtn");
+  const top25Btn = document.getElementById("top25ViewBtn");
   const mainContent = document.getElementById("MainContent");
 
   function switchToGrid() {
     gridBtn.classList.add("active");
     listBtn.classList.remove("active");
     picksBtn.classList.remove("active");
+    top25Btn.classList.remove("active");
 
     const list = document.querySelector(".list-container");
     list.style.display = "none";
@@ -129,12 +157,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
     picks.style.display = "none";
     const picksToggle = document.querySelector(".Toggle-Container");
     picksToggle.style.display = "none";
+    const ballot = document.querySelector(".Top25-Container");
+    ballot.style.display = "none";
   }
 
   function switchToList() {
     listBtn.classList.add("active");
     gridBtn.classList.remove("active");
     picksBtn.classList.remove("active");
+    top25Btn.classList.remove("active");
 
     const table = document.querySelector(".table-container");
     table.style.display = "none";
@@ -148,12 +179,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
     picks.style.display = "none";
     const picksToggle = document.querySelector(".Toggle-Container");
     picksToggle.style.display = "none";
+    const ballot = document.querySelector(".Top25-Container");
+    ballot.style.display = "none";
   }
 
   function switchToPicks() {
     listBtn.classList.remove("active");
     gridBtn.classList.remove("active");
     picksBtn.classList.add("active");
+    top25Btn.classList.remove("active");
 
     const table = document.querySelector(".table-container");
     table.style.display = "none";
@@ -167,11 +201,37 @@ document.addEventListener("DOMContentLoaded", (event) => {
     picks.style.display = "flex";
     const picksToggle = document.querySelector(".Toggle-Container");
     picksToggle.style.display = "flex";
+    const ballot = document.querySelector(".Top25-Container");
+    ballot.style.display = "none";
+  }
+
+  function switchToTop25() {
+    listBtn.classList.remove("active");
+    gridBtn.classList.remove("active");
+    picksBtn.classList.remove("active");
+    top25Btn.classList.add("active");
+    
+    const table = document.querySelector(".table-container");
+    table.style.display = "none";
+    const list = document.querySelector(".list-container");
+    list.style.display = "none";
+    const fab = document.querySelector(".Fab-Wrapper");
+    fab.style.display = "none";
+    const save = document.querySelector(".Fab-Save");
+    save.style.display = "none";
+    const picks = document.querySelector(".Picks-Container");
+    picks.style.display = "none";
+    const picksToggle = document.querySelector(".Toggle-Container");
+    picksToggle.style.display = "none";
+    const ballot = document.querySelector(".Top25-Container");
+    ballot.style.display = "flex";
+    fetchD1().then((res) => { TEAMS = res; fetchTop25(AUTHED_USER.sub).then((res2) => { draftBallot = res2.data[0].week10 ?? draftBallot; renderBallot(); }); });
   }
 
   gridBtn.addEventListener("click", switchToGrid);
   listBtn.addEventListener("click", switchToList);
   picksBtn.addEventListener("click", switchToPicks);
+  top25Btn.addEventListener("click", switchToTop25);
 
   queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -1429,6 +1489,193 @@ function renderLegend() {
         `;
     }).join('');
 }
+
+/* Top 25 */
+const container = document.getElementById('ballotContainer');
+        const modal1 = document.getElementById('teamModal');
+        const saveBtn = document.getElementById('saveBtn');
+        const viewSelector = document.getElementById('viewSelector');
+
+function renderBallot() {
+            container.innerHTML = '';
+            
+            // Determine which data to show
+            let dataToShow = [];
+            let isReadOnly = false;
+
+            if (currentView === 'DRAFT') {
+                dataToShow = draftBallot;
+                isReadOnly = false;
+                saveBtn.classList.remove('hidden');
+            } else {
+                dataToShow = MOCK_DB[currentView];
+                isReadOnly = true;
+                saveBtn.classList.add('hidden');
+            }
+            updateTop25(AUTHED_USER.sub, 'week10', draftBallot);
+
+            dataToShow.forEach((teamKey, index) => {
+                const rank = index + 1;
+                const isFilled = teamKey != 0;
+                const rowClass = isFilled ? 'is-filled' : 'is-empty';
+                
+                let contentHTML = '';
+                let controlsHTML = '';
+
+                if (isFilled) {
+                    const team = TEAMS.find(team => team.id == teamKey);
+                    contentHTML = `
+                        <div class="Team-Info">
+                            <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${team.id}.png&h=200&w=200" class="Team-Logo" alt="${team.name}">
+                            <div class="Team-Name">${team.name}</div>
+                        </div>
+                    `;
+                    
+                    // CONTROLS (Only in Draft Mode)
+                    if (!isReadOnly) {
+                        const upVisibility = index === 0 ? 'hidden' : '';
+                        const downVisibility = index === 24 ? 'hidden' : '';
+                        controlsHTML = `
+                            <div class="Row__Controls">
+                                <button class="Control-Btn ${upVisibility}" onclick="moveTeam(${index}, -1)">
+                                    <i class="fa-solid fa-chevron-up"></i>
+                                </button>
+                                <button class="Control-Btn remove" onclick="clearRow(${index})">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <button class="Control-Btn ${downVisibility}" onclick="moveTeam(${index}, 1)">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // EMPTY STATE (Only in Draft Mode)
+                    contentHTML = `<div class="Placeholder-Text">${isReadOnly ? '-' : 'Tap to Select'}</div>`;
+                }
+
+                // Handle Click (Disable in ReadOnly)
+                const clickAction = (!isReadOnly) ? `onclick="openSelector(${index})"` : '';
+                const readonlyClass = isReadOnly ? 'readonly' : '';
+
+                const html = `
+                    <div class="Ballot-Row ${rowClass}">
+                        <div class="Row__Rank">${rank}</div>
+                        <div class="Row__Content ${readonlyClass}" ${clickAction}>
+                            ${contentHTML}
+                        </div>
+                        ${controlsHTML}
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function switchView(newView) {
+            currentView = newView;
+            renderBallot();
+        }
+
+        // --- MODAL & SEARCH ---
+
+        function openSelector(index) {
+            activeRowIndex = index;
+            document.getElementById('teamSearch').value = ''; // Reset Search
+            renderTeamGrid();
+            modal1.classList.add('active');
+            setTimeout(() => document.getElementById('teamSearch').focus(), 100);
+        }
+
+        function filterTeams() {
+            const query = document.getElementById('teamSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.Selectable-Team');
+            
+            items.forEach(item => {
+                const name = item.getAttribute('data-name').toLowerCase();
+                if (name.includes(query)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderTeamGrid() {
+            const grid = document.getElementById('teamGrid');
+            grid.innerHTML = '';
+
+            const usedTeams = draftBallot.filter(t => t != 0);
+
+            console.log(usedTeams);
+            for (team of TEAMS) {
+                // Determine disabled state
+                const isUsed = usedTeams.includes(team.id) && draftBallot[activeRowIndex] != team.id;
+                isUsed && console.log(team.id)
+                const disabledClass = isUsed ? 'disabled' : '';
+                const style = isUsed ? 'opacity: 0.4;' : '';
+
+                const html = `
+                    <div class="Selectable-Team ${disabledClass}" 
+                         style="${style}" 
+                         onclick="selectTeam('${team.id}')"
+                         data-name="${team.name}">
+                        <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/${team.id}.png&h=200&w=200">
+                        <span>${team.name}</span>
+                        ${isUsed ? '<i class="fa-solid fa-check" style="margin-left:auto; color:#b2bec3;"></i>' : ''}
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', html);
+            }
+        }
+
+        function selectTeam(teamKey) {
+            draftBallot[activeRowIndex] = teamKey;
+            closeModal();
+            renderBallot();
+        }
+
+        function closeModal(e) {
+            if (e && !e.target.classList.contains('Modal-Overlay') && !e.target.classList.contains('Modal-Close')) return;
+            modal1.classList.remove('active');
+        }
+
+        // --- DRAFT MANIPULATION ---
+
+        function clearRow(index) {
+            event.stopPropagation();
+            draftBallot[index] = 0;
+            renderBallot();
+        }
+
+        function moveTeam(index, direction) {
+            event.stopPropagation();
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= draftBallot.length) return;
+            const temp = draftBallot[index];
+            draftBallot[index] = draftBallot[newIndex];
+            draftBallot[newIndex] = temp;
+            renderBallot();
+        }
+
+        function saveBallot() {
+            return;
+            // Validate
+            const filledCount = draftBallot.filter(t => t !== null).length;
+            if (filledCount === 0) {
+                alert("Please select at least one team.");
+                return;
+            }
+
+            // 1. Save logic (mocking DB save)
+            // We update 'DRAFT' view or create a 'MY_SAVED' view. 
+            // For demo, let's pretend we submitted to Official.
+            
+            alert(`Ballot Submitted! Switching to Official Rankings.`);
+
+            // 2. Transition View
+            viewSelector.value = "OFFICIAL";
+            switchView("OFFICIAL");
+        }
 
 // AUTH LOGIC
 const isUserLoggedIn = false;

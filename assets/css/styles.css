@@ -31,6 +31,7 @@ font-size: 30px; /* iOS Large Title */
 letter-spacing: -0.01em;
 margin-bottom: 8px; /* Space between title and subheader */
 color: #000;
+text-transform: uppercase;
 }
 
 .subheader {
@@ -638,23 +639,55 @@ opacity: 0.9;
 
 /* --- MENU BAR --- */
 .Menu-Options {
-display: flex;
-flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  
+  gap: 8px; 
+  padding: 0 20px 20px 20px;
+  
+  position: sticky;
+  left: 0;
+  width: 300px; 
+  box-sizing: border-box; 
 
-justify-content: space-between; 
-
-gap: 20px 20px;
-/*
-margin-bottom: 30px;
-*/
-padding: 0 20px 20px 20px;
-
-position: sticky;
-left: 0;
-width: max-content;
-
-animation: fadeInDown 0.8s ease-out;
+  animation: fadeInDown 0.8s ease-out;
 }
+
+.Toggle-Btn {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #636e72;
+  cursor: pointer;
+  border: none;
+  background-color: #dfe6e9;
+  border-radius: 25px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap: 8px;
+  padding: 10px 16px; 
+  
+  transition: all 0.3s ease;
+}
+
+.Toggle-Btn svg { 
+  width: 16px; 
+  height: 16px; 
+  fill: #636e72; 
+  transition: fill 0.3s ease;
+}
+
+.Toggle-Btn.active {
+  background-color: #ffffff;
+  color: #e17055;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.Toggle-Btn.active svg { fill: #e17055; }
 
 .Week-Selector {
   background-color: #dfe6e9;
@@ -669,7 +702,7 @@ animation: fadeInDown 0.8s ease-out;
   height: 36.5px;
   min-width: 120px;
   
-  padding: 0 16px 0 20px;
+  padding: 0 8px 0 20px;
 
   transition: all 0.3s ease;
 }
@@ -687,7 +720,6 @@ animation: fadeInDown 0.8s ease-out;
   cursor: pointer;
   outline: none;
   
-  width: 100%;
   padding-right: 5px;
 }
 
@@ -708,43 +740,6 @@ animation: fadeInDown 0.8s ease-out;
 .Week-Selector:hover .Week-Select-Input { color: #e17055; }
 .Week-Selector:hover .Week-Icon svg { fill: #e17055; }
 .Week-Selector:hover .Week-Icon { transform: rotate(180deg); }
-
-.View-Toggle {
-  background-color: #dfe6e9;
-  border-radius: 30px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-  
-  display: flex;
-}
-
-.Toggle-Btn {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #636e72;
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-radius: 25px;
-  
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  
-  transition: all 0.3s ease;
-}
-
-.Toggle-Btn svg { width: 16px; height: 16px; fill: #636e72; transition: fill 0.3s ease;}
-
-.Toggle-Btn.active {
-  background-color: #ffffff;
-  color: #e17055; /* Burnt orange accent */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.Toggle-Btn.active svg { fill: #e17055; }
 
 /* LIST */
 .list-container {
@@ -2153,7 +2148,202 @@ max-height: 100px;
     word-break: break-word; /* Prevents long words from overflowing */
 }
 
+/* --- BALLOT CONTAINER --- */
+    .Top25-Container {
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding-bottom: 80px;
+    }
 
+    /* Custom Select Styling */
+    .View-Selector-Wrapper {
+        position: relative;
+        display: inline-block;
+        margin: 10px 0 10px 0;
+        padding-bottom: 10px;
+    }
+
+    .View-Selector {
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: #f1f2f6;
+        border: 1px solid #dfe6e9;
+        border-radius: 20px;
+        padding: 8px 35px 8px 15px;
+        font-family: 'Oswald', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #636e72;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        outline: none;
+    }
+
+    .View-Selector:focus { border-color: #0984e3; }
+
+    .View-Selector-Icon {
+        position: relative;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #b2bec3;
+        pointer-events: none;
+        font-size: 12px;
+    }
+
+    .Ballot-Container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: opacity 0.3s ease;
+    }
+
+    /* --- ROW STYLES --- */
+    .Ballot-Row {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 12px;
+        min-height: 70px;
+        padding: 0 15px 0 0; 
+        position: relative;
+        transition: all 0.2s ease;
+        min-width:400px;
+    }
+
+    .Ballot-Row.is-empty {
+        background: #fdfdfd;
+        border: 2px dashed #dfe6e9;
+        box-shadow: none;
+    }
+
+    .Ballot-Row.is-filled {
+        border: 1px solid white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .Row__Rank {
+        width: 50px;
+        font-family: 'Fugaz One', cursive;
+        font-size: 24px;
+        text-align: center;
+        color: #b2bec3;
+        flex-shrink: 0;
+    }
+
+    .Row__Content {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        cursor: pointer;
+        padding: 10px 0;
+    }
+    
+    /* Disable clicking content in read-only mode */
+    .Row__Content.readonly { pointer-events: none; cursor: default; }
+
+    .Placeholder-Text {
+        font-family: 'Oswald', sans-serif;
+        font-size: 14px;
+        color: #dfe6e9;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .Team-Info { display: flex; align-items: center; gap: 15px; width: 100%; }
+    .Team-Logo { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+    .Team-Name {
+        font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 500;
+        color: #2d3436; text-transform: uppercase; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+    }
+
+    /* --- CONTROLS --- */
+    .Row__Controls {
+        display: flex; flex-direction: column; gap: 4px; align-items: center;
+        justify-content: center; margin-left: 10px; padding-left: 10px;
+        border-left: 1px solid #f1f2f6;
+    }
+    .Control-Btn {
+        background: none; border: none; color: #b2bec3; font-size: 14px;
+        padding: 4px 8px; cursor: pointer; transition: color 0.2s;
+    }
+    .Control-Btn:hover { color: #0984e3; }
+    .Control-Btn.remove:hover { color: #d63031; }
+    .Control-Btn.hidden { visibility: hidden; pointer-events: none; }
+
+
+    /* --- MODAL --- */
+    .Modal-Overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+        z-index: 2000; display: flex; justify-content: center; align-items: center;
+        opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+    }
+    .Modal-Overlay.active { opacity: 1; visibility: visible; }
+    .Modal-Card {
+        background: white; width: 90%; max-width: 400px; height: 80vh; /* Fixed height for scroll */
+        border-radius: 20px; padding: 20px; position: relative;
+        display: flex; flex-direction: column;
+        transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .Modal-Overlay.active .Modal-Card { transform: scale(1); }
+    .Modal-Header {
+        font-family: 'Fugaz One', cursive; font-size: 20px; color: #2d3436;
+        margin-bottom: 15px; text-align: center; flex-shrink: 0;
+    }
+    
+    /* Search Bar */
+    .Search-Container {
+        margin-bottom: 10px; flex-shrink: 0; position: relative;
+    }
+    .Search-Input {
+        width: 100%; padding: 12px 12px 12px 35px; border-radius: 12px;
+        border: 1px solid #f1f2f6; background: #f9f9f9;
+        font-family: 'Segoe UI', sans-serif; font-size: 16px;
+    }
+    .Search-Input:focus { outline: none; border-color: #0984e3; background: white; }
+    .Search-Icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #b2bec3; }
+
+    .Team-Grid {
+        display: grid; grid-template-columns: 1fr; gap: 8px;
+        overflow-y: auto; padding-right: 5px;
+    }
+    .Selectable-Team {
+        display: flex; align-items: center; gap: 12px; padding: 10px;
+        border-radius: 10px; border: 1px solid #f1f2f6; cursor: pointer; transition: background 0.2s;
+    }
+    .Selectable-Team:hover { background: #f9f9f9; }
+    .Selectable-Team.disabled { opacity: 0.5; pointer-events: none; background: #f1f2f6; }
+    .Selectable-Team.hidden { display: none; } /* For Search */
+    
+    .Selectable-Team img { width: 30px; height: 30px; object-fit: contain; }
+    .Selectable-Team span { font-family: 'Oswald', sans-serif; font-size: 16px; color: #2d3436; }
+    .Modal-Close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; color: #b2bec3; cursor: pointer; z-index: 10; }
+
+    /* --- SAVE BUTTON --- */
+    .Fab-Save-1 {
+        position: fixed; bottom: 30px; right: 25px;
+        background: linear-gradient(135deg, #2d3436, #000000);
+        color: white; border: none; border-radius: 50px; padding: 16px 24px;
+        font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600;
+        letter-spacing: 1px; text-transform: uppercase;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 900;
+        display: flex; align-items: center; gap: 10px; cursor: pointer;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+    .Fab-Save-1:active { transform: scale(0.95); }
+    /* Hide button when not in Draft mode */
+    .Fab-Save-1.hidden { opacity: 0; pointer-events: none; transform: translateY(100px); }
 
 
 
