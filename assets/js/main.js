@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     picksToggle.style.display = "none";
     const ballot = document.querySelector(".Top25-Container");
     ballot.style.display = "flex";
-    fetchD1().then((res) => { TEAMS = res; fetchTop25(AUTHED_USER.sub).then((res2) => { draftBallot = res2.data[0].week10 ?? draftBallot; renderBallot(); }); });
+    fetchD1().then((res) => { TEAMS = res; AUTHED_USER && fetchTop25(AUTHED_USER.sub).then((res2) => { draftBallot = res2.data[0].week10 ?? draftBallot; renderBallot(); }); });
   }
 
   gridBtn.addEventListener("click", switchToGrid);
@@ -1493,7 +1493,7 @@ function renderLegend() {
 /* Top 25 */
 const container = document.getElementById('ballotContainer');
         const modal1 = document.getElementById('teamModal');
-        const saveBtn = document.getElementById('saveBtn');
+        //const saveBtn = document.getElementById('saveBtn');
         const viewSelector = document.getElementById('viewSelector');
 
 function renderBallot() {
@@ -1506,11 +1506,11 @@ function renderBallot() {
             if (currentView === 'DRAFT') {
                 dataToShow = draftBallot;
                 isReadOnly = false;
-                saveBtn.classList.remove('hidden');
+                //saveBtn.classList.remove('hidden');
             } else {
                 dataToShow = MOCK_DB[currentView];
                 isReadOnly = true;
-                saveBtn.classList.add('hidden');
+                //saveBtn.classList.add('hidden');
             }
             updateTop25(AUTHED_USER.sub, 'week10', draftBallot);
 
